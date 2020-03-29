@@ -1,15 +1,22 @@
-try:
-    from eel import Eel, keyPressed
-
-except ModuleNotFoundError:
-    from sys import path
-    path.insert(0, '..')
-    from eel import Eel, keyPressed
-    
-from figure import Rectangle, Circle, Line, Triangle
-
 from time import time
 from random import randint
+from sys import path
+
+# NOTE: This weird import down here only looks this way because the module
+#       is located at the root . directory, while this file is at ./examples.
+#       Usually you would simply use `from eel import Eel`, with none of that
+#       Down there.
+ATTEMPTS = 4
+for i in range(ATTEMPTS):
+
+    try:
+        from eel import Eel
+        from figure import Rectangle, Circle, Line, Triangle
+        break
+
+    except ModuleNotFoundError:
+        path.insert(0, '..')
+
 
 WIDTH, HEIGHT = 640, 480
 SQ = 32

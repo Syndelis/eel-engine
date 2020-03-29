@@ -2,6 +2,10 @@ from math import sin, cos, pi
 from time import time
 from sys import path
 
+# NOTE: This weird import down here only looks this way because the module
+#       is located at the root . directory, while this file is at ./examples.
+#       Usually you would simply use `from eel import Eel`, with none of that
+#       Down there.
 ATTEMPTS = 4
 for i in range(ATTEMPTS):
 
