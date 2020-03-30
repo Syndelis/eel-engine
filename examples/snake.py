@@ -10,7 +10,7 @@ ATTEMPTS = 4
 for i in range(ATTEMPTS):
 
     try:
-        from eel import Eel
+        from eel import Eel, keyPressed
         from figure import Rectangle, Circle, Line, Triangle
         break
 
