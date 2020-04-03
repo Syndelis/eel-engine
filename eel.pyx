@@ -45,8 +45,8 @@ Eel Engine Declaration and Definition
 cdef class Eel:
 
     """
-    The window and graphics controller for the Eel Engine
     Eel(self, name="Eel Engine", width=640, height=480)
+    The window and graphics controller for the Eel Engine
     """
 
     # # Drawing
@@ -115,6 +115,12 @@ cdef class Eel:
         self, int x, int y, int used,
         int hashdata=0, int mode=GL_LINE_LOOP, int texture=0, float size=1.,
         byte cr=255, byte cg=255, byte cb=255, byte ca=255):
+        """
+        def submit(self, x, y, used, mode=GL_LINE_LOOP, texture=0, size=1.,
+                    cr=255, cg=255, cb=255, ca=255)
+        Submits a point to be drawn at x, y with the specified mode, texture,
+        size and color.
+        """
 
         cdef PointList *p
         cdef PointList *a
@@ -159,6 +165,11 @@ cdef class Eel:
             p.color = [cr, cg, cb, ca]
     
     cpdef setColor(self, int r, int g, int b, int a=255):
+        """
+        def setColor(self, r, g, b, a=255)
+        Makes the drawing color, from that point onwards, the specified color.
+        Note that calling this will affect all subsequent draw calls.
+        """
 
         self.draw_color.r = r
         self.draw_color.g = g
@@ -167,6 +178,10 @@ cdef class Eel:
 
     
     cpdef setClearColor(self, int r, int g, int b, int a=255):
+        """
+        def setClearColor(self, r, g, b, a=255)
+        Sets the clearing color to the specified color.
+        """
 
         self.clear_color.r = r
         self.clear_color.g = g
@@ -175,6 +190,10 @@ cdef class Eel:
 
 
     cpdef setPointSize(self, float size):
+        """
+        def setPointSize(self, size)
+        Sets the drawing size of each individual point for the subsequent draws.
+        """
 
         self.point_size = size
 
@@ -194,7 +213,7 @@ cdef class Eel:
 
     cpdef invalidate(self):
         """
-        cpdef invalidate(self)
+        def invalidate(self)
         Invalidates the drawing linked list so that we can reuse allocated
         resources.
         """
@@ -299,7 +318,7 @@ cdef class Eel:
 
         """
         start(self)
-        GLFW's main loop
+        Starts GLFW's main loop
         """
 
         if (not self.window_open):
@@ -355,6 +374,12 @@ cdef class Eel:
 
 
     cpdef run(self):
+        """
+        def run(self)
+        Opens and starts drawing in the window.
+        Equivalent to calling open() and start().
+        """
+
         self.open()
         self.start()
 # ------------------------------------------------------------------------------
@@ -363,9 +388,14 @@ Functions
 """
 
 cpdef keyPressed(key):
+    """
+    def keyPressed(key)
+    Returns wether or not said key is being hold.
+    """
+    t = type(key)
 
-    if type(key) == bytes:
+    if t == bytes or t == str:
         return _keyPressed(ord(key))
 
-    elif type(key) == int:
+    elif t == int:
         return _keyPressed(key)
