@@ -50,6 +50,7 @@ cdef class Eel:
         int hashdata=*, int mode=*, int texture=*, float size=*,
         byte cr=*, byte cg=*, byte cb=*, byte ca=*)
     cdef void submitBatch(self, PointList *points)
+    cpdef invalidate(self)
 
     cpdef setColor(self, int r, int g, int b, int a=*)
     cpdef setClearColor(self, int r, int g, int b, int a=*)

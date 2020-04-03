@@ -92,7 +92,6 @@ cdef class Eel:
 
 
     cpdef open(self):
-
         """
         def open(self)
         Opens a new window with the specified parameters during __init__()
@@ -145,6 +144,7 @@ cdef class Eel:
             if (a.used):
                 a.next = <PointList *> malloc(sizeof(PointList))
                 p = a.next
+                p.next = NULL
             
             else:
                 p = a
@@ -157,8 +157,6 @@ cdef class Eel:
             p.hashdata = hashdata
             p.point_size = size
             p.color = [cr, cg, cb, ca]
-            p.next = NULL
-
     
     cpdef setColor(self, int r, int g, int b, int a=255):
 
@@ -193,7 +191,23 @@ cdef class Eel:
 
             p = p.next
 
-    
+
+    cpdef invalidate(self):
+        """
+        cpdef invalidate(self)
+        Invalidates the drawing linked list so that we can reuse allocated
+        resources.
+        """
+
+        cdef int i = 0
+        cdef PointList *p = self.list.start
+
+        while (p != NULL):
+            i += 1
+            p.used = 0
+            p = p.next
+
+
     cdef void printList(self):
 
         cdef PointList *p = self.list.start
@@ -298,11 +312,11 @@ cdef class Eel:
 
         while (not glfwWindowShouldClose(self.window)):
 
+            self.invalidate()
             for i in self.deco_draw:
                 i(self)
 
             glfwMakeContextCurrent(self.window)
-            # glfwGetFramebufferSize(self.window, &width, &height)
 
             glClearColor(
                 self.clear_color.r / 255.0, self.clear_color.g / 255.0,

@@ -1,0 +1,10 @@
+# Ignore directories
+/.vscode/
+/build/
+/__pycache__/
+
+# Ignore possibly built binaries/C source
+*.so
+eel.c
+figure.c
+*.txt
