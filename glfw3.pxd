@@ -1,6 +1,6 @@
 from libc.stdint cimport int32_t, uint32_t, int64_t, uint64_t
 
-cdef extern from "/usr/include/GLFW/glfw3.h":
+cdef extern from "<GLFW/glfw3.h>":
 
     struct GLFWwindow:
         pass

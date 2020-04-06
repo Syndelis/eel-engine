@@ -1,4 +1,4 @@
-cdef extern from "/usr/include/SOIL/SOIL.h":
+cdef extern from "<SOIL/SOIL.h>":
 
     cdef enum:
         SOIL_LOAD_AUTO
