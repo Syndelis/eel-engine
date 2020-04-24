@@ -177,6 +177,12 @@ class BaseFigure(_BaseFigure):
         ins = cls(x, y, **kwargs)
         cls.instances.append(ins)
         return ins
+
+
+    @classmethod
+    def clear(cls):
+
+        cls.instances.clear()
 # ------------------------------------------------------------------------------
 """
 Python Figures
