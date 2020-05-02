@@ -125,6 +125,7 @@ cdef class Eel:
         cdef PointList *p
         cdef PointList *a
         cdef PointList *b
+        cdef int revalidated = 0
 
         if (self.list.start == NULL):
             self.list.start = <PointList *> malloc(sizeof(PointList))
@@ -146,6 +147,12 @@ cdef class Eel:
             while (b != NULL and a.used):
                 a = b
                 b = b.next
+
+                if (a.hashdata == hashdata):
+                    a.used = used
+                    revalidated += 1
+
+                    if (revalidated == used): return
 
             if (a.used):
                 a.next = <PointList *> malloc(sizeof(PointList))
