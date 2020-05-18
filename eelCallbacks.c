@@ -4,8 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
-typedef struct _PointList PointList;
-typedef struct _PointListHead PointListHead;
+typedef struct _Polygon Polygon;
 
 void keyCallback(GLFWwindow *window, int key, int scan, int action, int mods) {
 

@@ -11,7 +11,7 @@ struct _Color {
     byte r, g, b, a;
 };
 
-struct _PointList {
+struct _Polygon {
     // int used;
 
     union {
@@ -27,12 +27,12 @@ struct _PointList {
 
     int hashdata;
     struct _Point coord;
-    struct _PointList *next;
+    struct _Polygon *next;
 };
 
-struct _PointListHead {
-    struct _PointList *start;
-    char clear;
+struct _PolygonContainer {
+    struct _Polygon *poly;
+    struct _PolygonContainer *next;
 };
 
 struct _key {

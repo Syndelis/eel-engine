@@ -20,8 +20,9 @@ from eelData cimport *
 from eelCallbacks cimport *
 # from figure import _BaseFigure
 ctypedef _Point Point
-ctypedef _PointList PointList
-ctypedef _PointListHead PointListHead
+ctypedef _Polygon Polygon
+ctypedef _PolygonContainer PolygonContainer
+# ctypedef _PolygonHead PolygonHead
 ctypedef _key Key
 ctypedef _Color Color
 # ------------------------------------------------------------------------------
@@ -42,14 +43,12 @@ cdef class Eel:
     cdef public object deco_draw
 
     # Rendering
-    cdef PointListHead *list
+    cdef PolygonContainer *list
+    cdef PolygonContainer *last_used
 
     cpdef open(self)
 
-    cpdef submit(self, int x, int y, int used,
-        int hashdata=*, int mode=*, int texture=*, float size=*,
-        byte cr=*, byte cg=*, byte cb=*, byte ca=*)
-    cdef void submitBatch(self, PointList *points)
+    cdef void submit(self, Polygon *poly)
     cpdef invalidate(self)
 
     cpdef setColor(self, int r, int g, int b, int a=*)

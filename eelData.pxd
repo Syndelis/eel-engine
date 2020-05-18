@@ -7,7 +7,7 @@ cdef extern from "eelData.h":
     cdef struct _Point:
         int x, y
 
-    cdef struct _PointList:
+    cdef struct _Polygon:
         short int used
         char mode, texture
         _Color color
@@ -15,11 +15,11 @@ cdef extern from "eelData.h":
         
         int hashdata
         _Point coord
-        _PointList *next
+        _Polygon *next
 
-    cdef struct _PointListHead:
-        _PointList *start
-        char clear
+    cdef struct _PolygonContainer:
+        _Polygon *poly
+        _PolygonContainer *next
 
     cdef struct _key:
         int key

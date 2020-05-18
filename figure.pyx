@@ -20,7 +20,7 @@ Data Structures
 """
 from eelData cimport *
 ctypedef _Point Point
-ctypedef _PointList PointList
+ctypedef _Polygon Polygon
 ctypedef _Color Color
 # ------------------------------------------------------------------------------
 """
@@ -33,7 +33,7 @@ Base Figure (Cython implementation)
 
 cdef class _BaseFigure:
 
-    cdef PointList *list
+    cdef Polygon *list
     cdef int mod, mode
     cdef unsigned int texture
     cdef int _hash
@@ -81,10 +81,10 @@ cdef class _BaseFigure:
     cpdef renderPoints(self):
 
         if (self.list == NULL):
-            self.list = <PointList *> malloc(sizeof(PointList))
+            self.list = <Polygon *> malloc(sizeof(Polygon))
             self.list.next = NULL
 
-        cdef PointList *p = self.list
+        cdef Polygon *p = self.list
         cdef int i
         lay = self.layout()
 
@@ -100,7 +100,7 @@ cdef class _BaseFigure:
 
             if (i < len(lay)-1):
                 if (p.next == NULL):
-                    p.next = <PointList *> malloc(sizeof(PointList))
+                    p.next = <Polygon *> malloc(sizeof(Polygon))
                     p.next.used = 0
                     p.next.next = NULL
 
@@ -108,7 +108,7 @@ cdef class _BaseFigure:
 
     cdef void printList(self):
 
-        cdef PointList *p = self.list
+        cdef Polygon *p = self.list
         while (p != NULL):
 
             printf(
@@ -121,8 +121,8 @@ cdef class _BaseFigure:
 
     def __dealloc__(self):
 
-        cdef PointList *a
-        cdef PointList *b = self.list
+        cdef Polygon *a
+        cdef Polygon *b = self.list
 
         while (b != NULL):    
 
@@ -133,7 +133,7 @@ cdef class _BaseFigure:
 
     def __call__(self, Eel eel):
         self.renderPoints()
-        Eel.submitBatch(eel, self.list)
+        Eel.submit(eel, self.list)
 # ------------------------------------------------------------------------------
 """
 Base Figure Wrapper

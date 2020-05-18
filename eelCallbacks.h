@@ -4,8 +4,6 @@
 #include <GLFW/glfw3.h>
 #include "eelData.h"
 
-typedef struct _PointListHead PointListHead;
-
 // One for each ASCII-key
 static unsigned long long int key_pressed = 0;
 static struct _key keybuffer[255];

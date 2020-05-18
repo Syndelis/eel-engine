@@ -1,5 +1,5 @@
 from glfw3 cimport GLFWwindow
-from eelData cimport _key, _PointListHead
+from eelData cimport _key
 
 cdef extern from "eelCallbacks.h":
 
