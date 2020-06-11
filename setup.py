@@ -14,6 +14,12 @@ setup(
             library_dirs=["."],
             include_dirs=["."]
         ),
-        Extension("figure", ["figure.pyx"], libraries=['GL', 'SOIL'])
+        Extension(
+            "figure",
+            ["figure.pyx", "eelText.c"],
+            libraries=['GL', 'SOIL', 'freetype', 'eelText'],
+            library_dirs=[".", "/usr/include/freetype2"],
+            include_dirs=[".", "/usr/include/freetype2"]
+        )
     ])
 )

@@ -35,8 +35,9 @@ cdef int glfw_initialized = 0
 cdef float xcoord[4]
 cdef float ycoord[4]
 
-xcoord[0] = xcoord[3] = ycoord[0] = ycoord[1] = 0.0
-xcoord[1] = xcoord[2] = ycoord[2] = ycoord[3] = 1.0
+xcoord[0] = xcoord[1] = ycoord[0] = ycoord[3] = 1
+xcoord[2] = xcoord[3] = ycoord[1] = ycoord[2] = 0
+
 # ------------------------------------------------------------------------------
 """
 Eel Engine Declaration and Definition
@@ -117,16 +118,24 @@ cdef class Eel:
         cdef PolygonContainer *a = NULL
         cdef PolygonContainer *b = self.last_used
 
-        while (b != NULL and b.poly != NULL and b.poly.used):
+        # printf("Submitted polygon %d/%p\n", poly.hashdata, poly)
 
-            if (b.poly.hashdata == poly.hashdata):
-                b.poly.used = poly.used
+        while (b != NULL and b.poly != NULL and\
+                (b.poly.used or b.poly.hashdata == poly.hashdata)):
+
+            if (b.poly.hashdata == poly.hashdata and b.poly == poly):
+                if (poly.next and poly.mode != GL_POINTS):
+                    b.poly.used = poly.next.used
+                    # printf("Renewed polygon\n")
+
+                else: b.poly.used = 1
                 return
 
             a = b
             b = b.next
 
         if (b == NULL):
+            # printf("New polygon\n")
             a.next = <PolygonContainer *> malloc(sizeof(PolygonContainer))
             a = a.next
 
@@ -135,6 +144,7 @@ cdef class Eel:
             self.last_used = a
 
         elif (b.poly == NULL or (not b.poly.used)):
+            # printf("Substituted polygon\n")
             b.poly = poly
             self.last_used = b
 
@@ -173,19 +183,6 @@ cdef class Eel:
         self.point_size = size
 
 
-    # cdef void submitBatch(self, Polygon *batch):
-
-    #     cdef Polygon *p = batch
-    #     while (p != NULL):
-    #         self.submit(
-    #             p.coord.x, p.coord.y, p.used,
-    #             p.hashdata, p.mode, p.texture, p.point_size,
-    #             p.color.r, p.color.g, p.color.b, p.color.a
-    #         )
-
-    #         p = p.next
-
-
     cpdef invalidate(self):
         """
         def invalidate(self)
@@ -207,16 +204,21 @@ cdef class Eel:
 
         cdef PolygonContainer *pc = self.list
         cdef Polygon *p
+
+        printf("PRINTLIST\n")
+
         while (pc != NULL):
             p = pc.poly
 
-            printf(
-                "{x=%d, y=%d, used=%d, mode=%d, texture=%d, hashdata=%d, next=%p} -> \n",
-                p.coord.x, p.coord.y, p.used, p.mode, p.texture, p.hashdata, p.next
-            )
-            pc = pc.next
+            while (p != NULL):
+                printf(
+                    "{x=%.6f, y=%.6f, used=%d, mode=%d, texture=%d, hashdata=%d, next=%p} -> \n",
+                    p.coord.x, p.coord.y, p.used, p.mode, p.texture, p.hashdata, p.next
+                )
+                p = p.next
 
-        printf("\b\b\b\b\n")
+            pc = pc.next
+            printf("\b\b\b\b\n")
 
 
     cdef int countList(self):
@@ -254,8 +256,8 @@ cdef class Eel:
         cdef Polygon *p
         cdef Polygon *r
         cdef int count
-        cdef float width = self.width * 1.0
-        cdef float height = self.height * 1.0
+        cdef float width = 1.0#self.width * 1.0
+        cdef float height = 1.0#self.height * 1.0
 
         with nogil:
 
@@ -282,14 +284,16 @@ cdef class Eel:
                         p.color.r / 255.0, p.color.g / 255.0,
                         p.color.b / 255.0, p.color.a / 255.0
                     )
+                    # printf("0x%x%x%x%x:", p.color.r, p.color.g, p.color.b, p.color.a)
+                    # printf("{%.6f, %.6f};\n", p.coord.x/width, p.coord.y/height)
                     glPointSize(p.point_size)
                     glVertex2f(p.coord.x / width, p.coord.y / height)
-                    # printf("glVertex2f(%.2f, %.2f);\n", i.coord.x, i.coord.y);
                     p = p.next
 
                     count += 1
 
                 glEnd()
+                # printf("\n")
                 # printf("glEnd();\n")
                 glBindTexture(GL_TEXTURE_2D, 0)
                 
@@ -315,6 +319,8 @@ cdef class Eel:
             self.invalidate()
             for i in self.deco_draw:
                 i(self)
+
+            # self.printList()
 
             glfwMakeContextCurrent(self.window)
 

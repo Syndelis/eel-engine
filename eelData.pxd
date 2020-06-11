@@ -5,11 +5,11 @@ cdef extern from "eelData.h":
         byte r, g, b, a
 
     cdef struct _Point:
-        int x, y
+        float x, y
 
     cdef struct _Polygon:
         short int used
-        char mode, texture
+        byte mode, texture
         _Color color
         float point_size
         

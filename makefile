@@ -1,4 +1,4 @@
-all: libeelCallbacks.a eelEngine
+all: libeelText.a libeelCallbacks.a eelEngine
 
 eelEngine: eel.pyx setup.py
 	# python3 setup.py build --build-lib .
@@ -9,6 +9,12 @@ libeelCallbacks.a: eelCallbacks.o
 
 eelCallbacks.o: eelCallbacks.c eelCallbacks.h
 	gcc -c $< -lglfw -lm
+
+libeelText.a: eelText.o
+	ar rcs $@ $^
+
+eelText.o: eelText.c eelText.h
+	gcc -c $< -lfreetype -I/usr/include/freetype2
 
 test: test.c
 	gcc test.c -o test -lGL -lglfw -lm

@@ -4,7 +4,7 @@
 typedef unsigned char byte;
 
 struct _Point {
-    int x, y;
+    float x, y;
 };
 
 struct _Color {
@@ -18,14 +18,14 @@ struct _Polygon {
         int _data;
         struct {
             short int used;
-            char mode, texture;
+            byte mode, texture;
         };
     };
 
-    struct _Color color;
+    int hashdata;
     float point_size;
 
-    int hashdata;
+    struct _Color color;
     struct _Point coord;
     struct _Polygon *next;
 };
