@@ -269,6 +269,10 @@ cdef class Eel:
                 p = pc.poly
                 r = pc.poly
 
+                if not p:
+                    pc = pc.next
+                    continue
+
                 count = 0
                 if (r.texture):
                     glBindTexture(GL_TEXTURE_2D, r.texture)
