@@ -8,6 +8,9 @@ from libc.stdlib cimport malloc, free, rand, srand
 from libc.time cimport time
 from libc.math cimport pi, cos, sin
 
+# Posix
+from posix.time cimport timespec
+
 # Graphics (GL + GLFW & SOIL)
 from glfw3 cimport *
 from gl cimport *
@@ -43,8 +46,10 @@ cdef class Eel:
     cdef public object deco_draw
 
     # Technical
-    cdef float last_frame
+    cdef byte frame_read
+    cdef timespec last_frame
     cdef float _fps
+    cdef byte vsync
 
     # Rendering
     cdef PolygonContainer *list

@@ -67,7 +67,10 @@ cdef class Eel:
     # # Rendering
     # cdef PolygonHead *list
 
-    def __cinit__(self, name="Eel Engine", width=640, height=480, x=-1, y=-1):
+    def __cinit__(
+        self, name="Eel Engine", width=640, height=480, x=-1, y=-1,
+        vsync=True
+    ):
         
         global glfw_initialized
 
@@ -90,8 +93,9 @@ cdef class Eel:
         self.deco_draw = []
         glEnable(GL_TEXTURE_2D)
 
-        self.last_frame = -1
+        self.frame_read = 0
         self._fps = 0
+        self.vsync = vsync
 
         if (not glfw_initialized):
             glfw_initialized = 1
@@ -104,6 +108,8 @@ cdef class Eel:
         def open(self)
         Opens a new window with the specified parameters during __init__()
         """
+
+        if not self.vsync: glfwWindowHint(0x00021010, 0)
 
         self.window = glfwCreateWindow(
             self.width, self.height, self.name, NULL, NULL)
@@ -266,15 +272,20 @@ cdef class Eel:
         cdef float height = 1.0#self.height * 1.0
 
         cdef timespec temp
-        cdef float temps
 
         clock_gettime(CLOCK_MONOTONIC_RAW, &temp)
-        temps = temp.tv_sec + (temp.tv_nsec / 1000000000.0)
 
-        if self.last_frame > 0:
-            self._fps = 1.0 / (temps - self.last_frame)
+        cdef float sub
+
+        if self.frame_read:
+            self._fps = 1.0 / (
+                temp.tv_sec - self.last_frame.tv_sec +\
+                (temp.tv_nsec - self.last_frame.tv_nsec) / 1000000000.0
+            )
         
-        self.last_frame = temps
+        else: self.frame_read = 1
+        self.last_frame.tv_sec = temp.tv_sec
+        self.last_frame.tv_nsec = temp.tv_nsec
 
         with nogil:
 
@@ -369,7 +380,7 @@ cdef class Eel:
             self.display()
             glFlush()
 
-            glfwSwapBuffers(self.window)
+            if self.vsync: glfwSwapBuffers(self.window)
             glfwPollEvents()
 
         glfwDestroyWindow(self.window)

@@ -49,7 +49,7 @@ class Gear(BaseFigure):
         return l
 
 
-e = Eel()
+e = Eel(vsync=False)
 
 global g
 g = Gear.new(300, 200, inner_radius=40, outer_radius=55)
@@ -58,7 +58,9 @@ g = Gear.new(300, 200, inner_radius=40, outer_radius=55)
 def render(eel):
     global g
 
-    g.angle += 0.01
+    fps = eel.fps or 60
+
+    g.angle += 0.01 / fps * 60
     g(eel)
     Circle.new(300, 200, radius=20)(eel)
 
