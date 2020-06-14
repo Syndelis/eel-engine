@@ -8,6 +8,9 @@ from libc.stdlib cimport malloc, free, rand, srand
 from libc.time cimport time
 from libc.math cimport pi, cos, sin
 
+# Posix
+from posix.time cimport clock_gettime, timespec, CLOCK_MONOTONIC_RAW
+
 # Graphics (GL + GLFW & SOIL)
 from glfw3 cimport *
 from gl cimport *
@@ -86,6 +89,9 @@ cdef class Eel:
 
         self.deco_draw = []
         glEnable(GL_TEXTURE_2D)
+
+        self.last_frame = -1
+        self._fps = 0
 
         if (not glfw_initialized):
             glfw_initialized = 1
@@ -259,6 +265,17 @@ cdef class Eel:
         cdef float width = 1.0#self.width * 1.0
         cdef float height = 1.0#self.height * 1.0
 
+        cdef timespec temp
+        cdef float temps
+
+        clock_gettime(CLOCK_MONOTONIC_RAW, &temp)
+        temps = temp.tv_sec + (temp.tv_nsec / 1000000000.0)
+
+        if self.last_frame > 0:
+            self._fps = 1.0 / (temps - self.last_frame)
+        
+        self.last_frame = temps
+
         with nogil:
 
             glEnable(GL_TEXTURE_2D)
@@ -367,6 +384,12 @@ cdef class Eel:
 
         self.open()
         self.start()
+
+    
+    cpdef getFps(self):
+        return self._fps
+
+    fps = property(getFps)
 # ------------------------------------------------------------------------------
 """
 Functions

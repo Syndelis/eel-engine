@@ -14,7 +14,7 @@ from gl cimport *
 from SOIL cimport *
 # ------------------------------------------------------------------------------
 """
-Data Structuresa
+Data Structures
 """
 from eelData cimport *
 from eelCallbacks cimport *
@@ -42,6 +42,10 @@ cdef class Eel:
     cdef public object name
     cdef public object deco_draw
 
+    # Technical
+    cdef float last_frame
+    cdef float _fps
+
     # Rendering
     cdef PolygonContainer *list
     cdef PolygonContainer *last_used
@@ -60,6 +64,7 @@ cdef class Eel:
     cdef display(self)
     cpdef start(self)
     cpdef run(self)
+    cpdef getFps(self)
 # ------------------------------------------------------------------------------
 """
 Functions
