@@ -44,6 +44,7 @@ cdef class Eel:
     cdef int width, height, x, y
     cdef public object name
     cdef public object deco_draw
+    cdef public object deco_load
 
     # Technical
     cdef byte frame_read
@@ -70,6 +71,7 @@ cdef class Eel:
     cpdef start(self)
     cpdef run(self)
     cpdef getFps(self)
+    cpdef getDimensions(self)
 # ------------------------------------------------------------------------------
 """
 Functions

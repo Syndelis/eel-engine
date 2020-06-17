@@ -91,6 +91,7 @@ cdef class Eel:
         self.last_used = self.list
 
         self.deco_draw = []
+        self.deco_load = []
         glEnable(GL_TEXTURE_2D)
 
         self.frame_read = 0
@@ -258,7 +259,8 @@ cdef class Eel:
         """
         Decorator for functions that should be only run once
         """
-        pass
+        self.deco_load.append(func)
+        return func
 
     cdef display(self):
 
@@ -346,6 +348,8 @@ cdef class Eel:
         cdef double time, ratio
         cdef int count
 
+        for i in self.deco_load: i(self)
+
         while (not glfwWindowShouldClose(self.window)):
 
             self.invalidate()
@@ -400,7 +404,14 @@ cdef class Eel:
     cpdef getFps(self):
         return self._fps
 
+    cpdef getDimensions(self):
+        return (self.width, self.height)
+
+    # TODO:
+    # setFps: Locks fps
+    # setDimensions: redimension window
     fps = property(getFps)
+    dimensions = property(getDimensions)
 # ------------------------------------------------------------------------------
 """
 Functions

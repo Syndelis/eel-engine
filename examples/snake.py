@@ -6,6 +6,9 @@ from sys import path
 #       is located at the root . directory, while this file is at ./examples.
 #       Usually you would simply use `from eel import Eel`, with none of that
 #       Down there.
+
+# TODO: Remake this game so that the code is less spaghetty
+
 ATTEMPTS = 4
 for i in range(ATTEMPTS):
 
@@ -21,6 +24,7 @@ for i in range(ATTEMPTS):
 WIDTH, HEIGHT = 640, 480
 SQ = 32
 GAME_END = False
+VSYNC = False
 
 class Vector:
 
@@ -86,11 +90,12 @@ for y in range(HEIGHT//SQ):
 
 class Snake:
 
-    def __init__(self, x, y, size=3, grid=32):
+    def __init__(self, x, y, size=3, grid=32, width=640, height=480):
         self.body = [Vector(x + 32*i, y) for i in range(size)]
         self.dir = 'left'
         self.grid = grid
 
+        self.max = Vector(width-grid, height-grid)
 
     def grow(self, amnt=1):
         for i in range(amnt): self.body.append(None)
@@ -100,6 +105,12 @@ class Snake:
         global dirs, GAME_END
 
         nextpos = self.head + dirs[self.dir] * self.grid
+
+        if nextpos.x < 0 or nextpos.x > self.max.x or\
+            nextpos.y < 0 or nextpos.y > self.max.y:
+            GAME_END = True
+            return;
+
         for i in self.body[1:]:
             if (i and nextpos == i):
                 GAME_END = True
@@ -129,17 +140,10 @@ class Snake:
     head = property(getHead)
     tail = property(getTail)
 
-e = Eel()
+e = Eel(vsync=VSYNC)
 
-global player
-player = Snake(WIDTH/2, HEIGHT/2 - SQ/2)
-
-global apple
-apple = None
-
-global maxtimer, timer
-maxtimer = 4
-timer = maxtimer
+global player, apple, maxtimer, timer
+player, apple, maxtimer, timer = None, None, None, None
 
 def newApple():
     global apple, player
@@ -155,7 +159,19 @@ def newApple():
 
     apple = r
 
-newApple()
+
+@e.load
+def startGame(eel):
+    global player, apple, maxtimer, timer
+
+    player = Snake(
+        WIDTH/2, HEIGHT/2 - SQ/2,
+        width=WIDTH, height=HEIGHT
+    )
+    newApple()
+    maxtimer = 4
+    timer = maxtimer
+    GAME_END = False
 
 @e.draw
 def playerLogic(eel):
@@ -165,8 +181,17 @@ def playerLogic(eel):
     olddir = player.dir
 
     if keyPressed(256): exit()
+    if keyPressed(b"R"):
+        startGame(eel)
+        GAME_END = False
 
-    timer -= 1 * (not GAME_END)
+    if VSYNC:
+        timer -= 1 * (not GAME_END)
+
+    else:
+        fps = eel.fps or 60
+        timer -= (1 / fps * 60 * (not GAME_END))
+
     if timer <= 0:
         for k, v in keys.items():
             if keyPressed(k) and player.dir != opos[v] and v != opos[olddir]:

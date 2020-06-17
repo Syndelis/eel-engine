@@ -206,6 +206,10 @@ cdef class _BaseText(_BaseFigure):
             printf("\b\b\b\b\n")
 
 
+    cpdef setText(self, char *text):
+        self.text = text
+
+
     cpdef renderPoints(self):
         if (not self._font or not self.container):
             self.container = <PolygonContainer*>malloc(sizeof(PolygonContainer))
