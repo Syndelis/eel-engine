@@ -24,6 +24,7 @@ from eelCallbacks cimport *
 # from figure import _BaseFigure
 ctypedef _Point Point
 ctypedef _Polygon Polygon
+ctypedef _NewPolygon NewPolygon
 ctypedef _PolygonContainer PolygonContainer
 # ctypedef _PolygonHead PolygonHead
 ctypedef _key Key
@@ -59,6 +60,7 @@ cdef class Eel:
     cpdef open(self)
 
     cdef void submit(self, Polygon *poly)
+    cdef void render(self, NewPolygon *poly)
     cpdef invalidate(self)
 
     cpdef setColor(self, int r, int g, int b, int a=*)
@@ -67,6 +69,7 @@ cdef class Eel:
 
     cdef void printList(self)
     cdef int countList(self)
+    cpdef calculateFPS(self)
     cdef display(self)
     cpdef start(self)
     cpdef run(self)

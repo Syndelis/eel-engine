@@ -17,6 +17,15 @@ cdef extern from "eelData.h":
         _Point coord
         _Polygon *next
 
+    cdef struct _NewPolygon:
+        float *x
+        float *y
+        int used
+        
+        _Color color
+        float point_size
+        int mode, texture
+
     cdef struct _PolygonContainer:
         _Polygon *poly
         _PolygonContainer *next

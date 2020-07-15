@@ -49,7 +49,7 @@ cdef extern from "<GLFW/glfw3.h>":
 
     void glClearIndex(GLfloat c)
 
-    void glClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
+    void glClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) nogil
 
     void glClear(GLbitfield mask) nogil
 

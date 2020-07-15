@@ -30,6 +30,17 @@ struct _Polygon {
     struct _Polygon *next;
 };
 
+struct _NewPolygon {
+
+    float *x, *y;
+    int used;
+
+    struct _Color color;
+    float point_size;
+    int mode, texture;
+
+};
+
 struct _PolygonContainer {
     struct _Polygon *poly;
     struct _PolygonContainer *next;

@@ -11,6 +11,7 @@ from libc.string cimport strlen, strcpy
 
 # Graphics (GL & SOIL)
 from gl cimport *
+from glfw3 cimport *
 from SOIL cimport *
 
 # Eel integration
@@ -25,41 +26,70 @@ ctypedef _Character Character
 from eelData cimport *
 ctypedef _Point Point
 ctypedef _Polygon Polygon
+ctypedef _NewPolygon NewPolygon
 ctypedef _PolygonContainer PolygonContainer
 ctypedef _Color Color
 # ------------------------------------------------------------------------------
 """
 Functions
 """
+
+cdef float ux[4096]
+cdef float uy[4096]
+
+cpdef basicRec(int x, int y, int width, int height, Eel eel):
+
+    cdef NewPolygon p
+    p.color = [0, 200, 0, 255]
+    p.point_size = 1.
+    p.mode = GL_POLYGON
+    p.texture = 0
+    p.used = 4
+
+    l = [
+            (0, 0), (width, 0),
+            (width, height), (0, height)
+        ]
+
+    cdef int count = 0
+    for _x, _y in l:
+        ux[count] = (x + _x) * 1.0 / eel.width
+        uy[count] = (y + _y) * 1.0 / eel.height
+        count += 1
+
+    p.x = ux
+    p.y = uy
+
+    eel.render(&p)
 # ------------------------------------------------------------------------------
 """
-Base Figure (Cython implementation)
+Buffer-less BaseFigure implementation
 """
+
+
 
 cdef class _BaseFigure:
 
-    cdef Polygon *list
-    cdef int mod, mode
-    cdef unsigned int texture
-    cdef int _hash
-    cdef Color color
-    cdef float point_size
-    cdef int w_width, w_height
+    cdef NewPolygon poly
 
     def __cinit__(self, x, y, **kwargs):
 
-        self.mod = 1
-        self.list = NULL
-        self.texture = 0
-        self.mode = GL_LINE_LOOP
-        self._hash = <int> hash(self)
-        self.color = [255, 255, 255, 255]
-        self.point_size = 1.
-        self.w_width = 0
-        self.w_height = 0
+        self.poly.color = [255, 255, 255, 255]
+        self.poly.mode = GL_LINE_LOOP
+        self.poly.texture = 0
+        self.point_size = 1.0
+
+    
+    cpdef setColor(self, byte r, byte g, byte b, byte a=255):
+
+        self.poly.color.r = r
+        self.poly.color.g = g
+        self.poly.color.b = b
+        self.poly.color.a = a
+
 
     cpdef setMode(self, int mode):
-        self.mode = mode
+        self.poly.mode = mode
 
     
     cpdef setTexture(self, char *img):
@@ -70,80 +100,36 @@ cdef class _BaseFigure:
             SOIL_FLAG_COMPRESS_TO_DXT | SOIL_FLAG_MULTIPLY_ALPHA
         )
 
-        self.texture = tex
+        self.poly.texture = tex
 
 
-    cpdef setColor(self, int r, int g, int b, int a=255):
-
-        self.color.r = r
-        self.color.g = g
-        self.color.b = b
-        self.color.a = a
-
-
-    cpdef setPointSize(self, float size):
-
-        self.point_size = size
+    cpdef setByteTexture(self, byte texture):
+        self.poly.texture = texture
 
     
-    cpdef renderPoints(self):
-
-        if (self.list == NULL):
-            self.list = <Polygon *> malloc(sizeof(Polygon))
-            self.list.next = NULL
-
-        cdef Polygon *p = self.list
-        cdef int i
-        lay = self.layout()
-
-        for i in range(0, len(lay)):
-
-            p.coord.x = (self.x + lay[i][0]) / self.w_width
-            p.coord.y = (self.y + lay[i][1]) / self.w_height
-            p.used = self.used
-            p.mode = self.mode
-            p.texture = self.texture
-            p.hashdata = self._hash
-            p.color = self.color
-
-            if (i < len(lay)-1):
-                if (p.next == NULL):
-                    p.next = <Polygon *> malloc(sizeof(Polygon))
-                    p.next.used = 0
-                    p.next.next = NULL
-
-            p = p.next
-
-    cdef void printList(self):
-
-        cdef Polygon *p = self.list
-        while (p != NULL):
-
-            printf(
-                "{x=%d, y=%d, used=%d, mode=%d, texture=%d, hashdata=%d, next=%p} -> \n",
-                p.coord.x, p.coord.y, p.used, p.mode, p.texture, p.hashdata, p.next
-            )
-            p = p.next
-
-        printf("\b\b\b\b\n")
-
-    def __dealloc__(self):
-
-        cdef Polygon *a
-        cdef Polygon *b = self.list
-
-        while (b != NULL):    
-
-            a = b
-            b = b.next
-            free(a)
+    cpdef setPointSize(self, float ps):
+        self.poly.point_size = ps
 
 
     def __call__(self, Eel eel):
-        self.w_width = eel.width
-        self.w_height = eel.height
-        self.renderPoints()
-        Eel.submit(eel, self.list)
+
+        cdef int width = eel.width
+        cdef int height = eel.height
+
+        lay = self.layout()
+        cdef int count = 0
+
+        for x, y in lay:
+            ux[count] = (self.x + x)*1.0 / eel.width
+            uy[count] = (self.y + y)*1.0 / eel.height
+            # printf("%.10f %.10f\n", ux[count], uy[count])
+            count += 1
+
+        self.poly.x = ux
+        self.poly.y = uy
+        self.poly.used = <int> len(lay)
+
+        eel.render(&self.poly)
 # ------------------------------------------------------------------------------
 # TODO: Make it work with multiple fonts at a time
 # cdef Character *font
@@ -153,172 +139,172 @@ cdef class _BaseFigure:
 Base Text (Cython Implementation)
 """
 
-cdef class _BaseText(_BaseFigure):
+# cdef class _BaseText(_BaseFigure):
 
-    cdef PolygonContainer *container
-    cdef char *text
-    cdef Character *_font
-    cdef char *fontname
-    cdef int fontsize
+#     cdef PolygonContainer *container
+#     cdef char *text
+#     cdef Character *_font
+#     cdef char *fontname
+#     cdef int fontsize
 
-    def __cinit__(self, x, y, *, char *text, **kwargs):
-        self.container = NULL
-        self.text = text
-        self.color = [255, 255, 255, 255]
-        self.mode = GL_QUADS
-        self._hash = <int> hash(self)
-        self._font = NULL
-        self.fontname = NULL
-        self.used = 4
-
-
-    cpdef font(self, char *font_name, int fontsize):
-
-        self.fontname = font_name
-        self._font = NULL
-        self.fontsize = fontsize
-
-        # if not self._font:
-        #     printf("Font loading proccess\n")
-        #     self._font = loadCharacters(font_name)
-        #     printf("Font loaded\n")
-        #     printf("Font loaded. Example: (%d)\n", self._font['a'].TextureID)
+#     def __cinit__(self, x, y, *, char *text, **kwargs):
+#         self.container = NULL
+#         self.text = text
+#         self.color = [255, 255, 255, 255]
+#         self.mode = GL_QUADS
+#         self._hash = <int> hash(self)
+#         self._font = NULL
+#         self.fontname = NULL
+#         self.used = 4
 
 
-    cdef void printList(self):
+#     cpdef font(self, char *font_name, int fontsize):
 
-        cdef PolygonContainer *pc = self.container
-        cdef Polygon *p
+#         self.fontname = font_name
+#         self._font = NULL
+#         self.fontsize = fontsize
 
-        printf("PRINTLIST-text\n")
-
-        while (pc != NULL):
-            p = pc.poly
-
-            while (p != NULL):
-                printf(
-                    "{x=%.6f, y=%.6f, used=%d, mode=%d, texture=%d, hashdata=%d, next=%p} -> \n",
-                    p.coord.x, p.coord.y, p.used, p.mode, p.texture, p.hashdata, p.next
-                )
-                p = p.next
-
-            pc = pc.next
-            printf("\b\b\b\b\n")
+#         # if not self._font:
+#         #     printf("Font loading proccess\n")
+#         #     self._font = loadCharacters(font_name)
+#         #     printf("Font loaded\n")
+#         #     printf("Font loaded. Example: (%d)\n", self._font['a'].TextureID)
 
 
-    cpdef setText(self, char *text):
-        self.text = text
+#     cdef void printList(self):
+
+#         cdef PolygonContainer *pc = self.container
+#         cdef Polygon *p
+
+#         printf("PRINTLIST-text\n")
+
+#         while (pc != NULL):
+#             p = pc.poly
+
+#             while (p != NULL):
+#                 printf(
+#                     "{x=%.6f, y=%.6f, used=%d, mode=%d, texture=%d, hashdata=%d, next=%p} -> \n",
+#                     p.coord.x, p.coord.y, p.used, p.mode, p.texture, p.hashdata, p.next
+#                 )
+#                 p = p.next
+
+#             pc = pc.next
+#             printf("\b\b\b\b\n")
 
 
-    cpdef renderPoints(self):
-        if (not self._font or not self.container):
-            self.container = <PolygonContainer*>malloc(sizeof(PolygonContainer))
-            self.container.poly = NULL
-            self.container.next = NULL
-
-        if (not self._font):
-            if (not self.fontname):
-                return
-
-            self._font = loadCharacters(self.fontname, self.fontsize)
-
-        cdef PolygonContainer *p
-        p = self.container
-
-        cdef float width = self.w_width * 1.0
-        cdef float height = self.w_height * 1.0
-
-        cdef float fx = self.x/width
-        cdef float fy = self.y/height
-
-        cdef int i, j
-
-        cdef char c
-        cdef Character *ch
-        cdef float xpos, ypos, w, h
-        cdef Polygon *pp
-
-        cdef int loopage = strlen(self.text)
-
-        for i in range(0, loopage):
-
-            c = self.text[i]
-            ch = self._font + c
-
-            xpos = fx + ch.bear.x/width
-            ypos = fy + (ch.size.y - ch.bear.y)/height
-
-            w = ch.size.x/width
-            h = ch.size.y/height
-
-            v = [
-                [xpos + w, ypos    ],
-                [xpos + w, ypos - h],
-                [xpos    , ypos - h],
-                [xpos    , ypos    ]
-            ]
-
-            p.poly = <Polygon *> malloc(sizeof(Polygon))
-            p.poly.next = NULL
-
-            pp = p.poly
-
-            for j in range(self.used):
-                pp.coord.x = v[j][0]
-                pp.coord.y = v[j][1]
-                # printf("{%.6f, %.6f}\n", pp.coord.x, pp.coord.y)
-                pp.used = self.used
-                pp.mode = self.mode
-                pp.texture = ch.TextureID
-                pp.hashdata = self._hash
-                pp.color = self.color
-                pp.next = NULL
-
-                if (j < self.used-1):
-                    pp.next = <Polygon *> malloc(sizeof(Polygon))
-                    pp = pp.next
-                    pp.used = self.used
-
-            if (i < loopage-1):
-                p.next = <PolygonContainer *> malloc(sizeof(PolygonContainer))
-                p = p.next
-                p.next = NULL
-                p.poly = NULL
-
-            fx += (ch.advance >> 6) / width
+#     cpdef setText(self, char *text):
+#         self.text = text
 
 
-    def __dealloc__(self):
-        cdef Polygon *pa
-        cdef Polygon *pb
-        cdef PolygonContainer *ca
-        cdef PolygonContainer *cb = self.container
+#     cpdef renderPoints(self):
+#         if (not self._font or not self.container):
+#             self.container = <PolygonContainer*>malloc(sizeof(PolygonContainer))
+#             self.container.poly = NULL
+#             self.container.next = NULL
 
-        while (cb != NULL):
+#         if (not self._font):
+#             if (not self.fontname):
+#                 return
 
-            ca = cb
-            cb = cb.next
+#             self._font = loadCharacters(self.fontname, self.fontsize)
 
-            pb = ca.poly
-            while (pb != NULL):
+#         cdef PolygonContainer *p
+#         p = self.container
 
-                pa = pb
-                pb = pb.next
-                free(pa)
+#         cdef float width = self.w_width * 1.0
+#         cdef float height = self.w_height * 1.0
 
-            free(ca)
+#         cdef float fx = self.x/width
+#         cdef float fy = self.y/height
+
+#         cdef int i, j
+
+#         cdef char c
+#         cdef Character *ch
+#         cdef float xpos, ypos, w, h
+#         cdef Polygon *pp
+
+#         cdef int loopage = strlen(self.text)
+
+#         for i in range(0, loopage):
+
+#             c = self.text[i]
+#             ch = self._font + c
+
+#             xpos = fx + ch.bear.x/width
+#             ypos = fy + (ch.size.y - ch.bear.y)/height
+
+#             w = ch.size.x/width
+#             h = ch.size.y/height
+
+#             v = [
+#                 [xpos + w, ypos    ],
+#                 [xpos + w, ypos - h],
+#                 [xpos    , ypos - h],
+#                 [xpos    , ypos    ]
+#             ]
+
+#             p.poly = <Polygon *> malloc(sizeof(Polygon))
+#             p.poly.next = NULL
+
+#             pp = p.poly
+
+#             for j in range(self.used):
+#                 pp.coord.x = v[j][0]
+#                 pp.coord.y = v[j][1]
+#                 # printf("{%.6f, %.6f}\n", pp.coord.x, pp.coord.y)
+#                 pp.used = self.used
+#                 pp.mode = self.mode
+#                 pp.texture = ch.TextureID
+#                 pp.hashdata = self._hash
+#                 pp.color = self.color
+#                 pp.next = NULL
+
+#                 if (j < self.used-1):
+#                     pp.next = <Polygon *> malloc(sizeof(Polygon))
+#                     pp = pp.next
+#                     pp.used = self.used
+
+#             if (i < loopage-1):
+#                 p.next = <PolygonContainer *> malloc(sizeof(PolygonContainer))
+#                 p = p.next
+#                 p.next = NULL
+#                 p.poly = NULL
+
+#             fx += (ch.advance >> 6) / width
 
 
-    def __call__(self, Eel eel):
-        self.w_width = eel.width
-        self.w_height = eel.height
-        if not self.container: self.renderPoints()
+#     def __dealloc__(self):
+#         cdef Polygon *pa
+#         cdef Polygon *pb
+#         cdef PolygonContainer *ca
+#         cdef PolygonContainer *cb = self.container
 
-        # self.printList()
-        cdef PolygonContainer *p = self.container
-        while p:
-            Eel.submit(eel, p.poly)
-            p = p.next
+#         while (cb != NULL):
+
+#             ca = cb
+#             cb = cb.next
+
+#             pb = ca.poly
+#             while (pb != NULL):
+
+#                 pa = pb
+#                 pb = pb.next
+#                 free(pa)
+
+#             free(ca)
+
+
+#     def __call__(self, Eel eel):
+#         self.w_width = eel.width
+#         self.w_height = eel.height
+#         if not self.container: self.renderPoints()
+
+#         # self.printList()
+#         cdef PolygonContainer *p = self.container
+#         while p:
+#             Eel.submit(eel, p.poly)
+#             p = p.next
 
 # ------------------------------------------------------------------------------
 """
@@ -374,11 +360,11 @@ class BaseFigure(_BaseFigure):
 Python's Text wrapper
 """
 
-class Text(_BaseText, BaseFigure):
+# class Text(_BaseText, BaseFigure):
 
-    def __init__(self, x, y, **kwargs):
-        self.x = x
-        self.y = y
+#     def __init__(self, x, y, **kwargs):
+#         self.x = x
+#         self.y = y
 # ------------------------------------------------------------------------------
 """
 Python Figures
@@ -487,11 +473,10 @@ class Line(BaseFigure):
         self.y = y
         self.xp = xp
         self.yp = yp
-        self.used = 2
 
         # self.setMode(GL_LINE)
 
 
     def layout(self):
         
-        return [(0, 0), (self.xp-self.x, self.yp-self.y)]
+        return [(0, 0), (self.xp - self.x, self.yp - self.y)]

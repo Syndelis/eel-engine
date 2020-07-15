@@ -30,6 +30,7 @@ class Gear(BaseFigure):
         self.angle = angle * pi / 180
 
         self.used = round((inner_radius + outer_radius)/2 * 20 * precision)
+        print('points', self.used)
         self.dent_ratio = self.used // self.dents
 
     

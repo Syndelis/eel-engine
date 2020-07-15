@@ -334,6 +334,46 @@ cdef class Eel:
                 pc = pc.next
 
 
+    cdef void render(self, NewPolygon *p):
+
+        cdef int i
+        cdef float x, y
+
+        with nogil:
+
+            glColor4f(
+                p.color.r / 255.0, p.color.g / 255.0,
+                p.color.b / 255.0, p.color.a / 255.0
+            )
+            glPointSize(p.point_size)
+            glBindTexture(GL_TEXTURE_2D, p.texture)
+
+            glBegin(p.mode)
+            for i in range(0, p.used):
+
+                if p.texture:
+                    glTexCoord2f(xcoord[i], ycoord[i])
+
+                glVertex2f(p.x[i], p.y[i])
+
+            glEnd()
+    
+    cpdef calculateFPS(self):
+
+        cdef timespec temp
+        clock_gettime(CLOCK_MONOTONIC_RAW, &temp)
+
+        if self.frame_read:
+                self._fps = 1.0 / (
+                    temp.tv_sec - self.last_frame.tv_sec +\
+                    (temp.tv_nsec - self.last_frame.tv_nsec) / 1000000000.0
+                )
+            
+        else: self.frame_read = 1
+        self.last_frame.tv_sec = temp.tv_sec
+        self.last_frame.tv_nsec = temp.tv_nsec
+
+
     cpdef start(self):
 
         """
@@ -353,8 +393,8 @@ cdef class Eel:
         while (not glfwWindowShouldClose(self.window)):
 
             self.invalidate()
-            for i in self.deco_draw:
-                i(self)
+            # for i in self.deco_draw:
+            #     i(self)
 
             # self.printList()
 
@@ -381,8 +421,19 @@ cdef class Eel:
             glOrtho(0, ratio, 1., 0, 1., -1.)
             glViewport(0, 0, self.width, self.height)
 
-            self.display()
-            glFlush()
+            # self.display()
+            with nogil:
+                glEnable(GL_TEXTURE_2D)
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+                glBindTexture(GL_TEXTURE_2D, 0)
+                
+            for i in self.deco_draw:
+                i(self)
+
+            with nogil:
+                glFlush()
+
+            self.calculateFPS()
 
             if self.vsync: glfwSwapBuffers(self.window)
             glfwPollEvents()

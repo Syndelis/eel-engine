@@ -14,7 +14,7 @@ for i in range(ATTEMPTS):
 
     try:
         from eel import Eel, keyPressed
-        from figure import Rectangle, Circle, Line, Triangle
+        from figure import Rectangle, Circle, Line, Triangle, Sprite, basicRec
         break
 
     except ModuleNotFoundError:
@@ -124,9 +124,11 @@ class Snake:
     def draw(self, eel):
         for i in self.body:
             if (i):
-                r = Rectangle.new(i.x, i.y, width=self.grid, height=self.grid, fill=True)
-                r.setColor(0, 200, 0)
-                r(eel)
+                # r = Rectangle.new(i.x, i.y, width=self.grid, height=self.grid, fill=True)
+                # r.setColor(0, 200, 0)
+                # r(eel)
+                basicRec(i.x, i.y, self.grid, self.grid, eel)
+                # r = Sprite.new(i.x-self.grid/2, i.y-self.grid/2, width=self.grid, height=self.grid, img="turtle.jpg")
 
     def getHead(self):
         return self.body[0]
@@ -176,6 +178,9 @@ def startGame(eel):
 @e.draw
 def playerLogic(eel):
     global player, maxtimer, timer, keys, opos, GAME_END
+
+    print(eel.fps)
+
     player.draw(eel)
 
     olddir = player.dir
