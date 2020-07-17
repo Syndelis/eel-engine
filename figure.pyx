@@ -139,6 +139,84 @@ cdef class _BaseFigure:
 Base Text (Cython Implementation)
 """
 
+cdef class _BaseText(_BaseFigure):
+
+    cdef int textlen, fontsize
+    cdef char *text
+    cdef char *fontname
+    cdef Character *font
+    # cdef NewPolygon poly
+
+    def __cinit__(self, x, y, *, char *text, char *font, int size=32, **kwargs):
+        self.setText(text)
+        self.setFont(font, size)
+
+        self.poly.color = [255, 255, 255, 255]
+        self.poly.mode = GL_QUADS
+        self.poly.point_size = 1.
+        self.poly.used = 4
+
+        self.font = NULL
+
+
+    cpdef setText(self, char *text):
+        self.text = text
+        self.textlen = strlen(text)
+
+
+    cpdef setFont(self, char *fontname, int size=32):
+        self.fontname = fontname
+        self.fontsize = size
+
+        if self.font:
+            free(self.font)
+            self.font = NULL
+
+
+    def __call__(self, Eel eel):
+
+        cdef int i, j
+        cdef char c
+        cdef Character *ch
+        
+        cdef float xpos, ypos, fx, fy, w, h, width, height
+        width = eel.width * 1.
+        height = eel.height * 1.
+
+        fx = self.x / width
+        fy = self.y / height
+
+        # NOTE: IF I EVER REWORK THE ENGINE
+        # The font must be loaded after a GL context has been initialized
+        # i.e. e.run()
+
+        if (not self.font):
+            self.font = loadCharacters(self.fontname, self.fontsize)
+
+        for i in range(0, self.textlen):
+            c = self.text[i]
+            ch = self.font + c
+
+            xpos = fx + ch.bear.x / width
+            ypos = fy + (ch.size.y - ch.bear.y) / height
+
+            w = ch.size.x / width
+            h = ch.size.y / height
+
+            ux[0] = ux[1] = xpos + w
+            ux[2] = ux[3] = xpos
+
+            uy[0] = uy[3] = ypos
+            uy[1] = uy[2] = ypos - h
+
+            self.poly.x = ux
+            self.poly.y = uy
+            self.poly.texture = ch.TextureID
+
+            eel.render(&self.poly)
+
+            fx += (ch.advance >> 6) / width
+
 # cdef class _BaseText(_BaseFigure):
 
 #     cdef PolygonContainer *container
@@ -359,6 +437,12 @@ class BaseFigure(_BaseFigure):
 """
 Python's Text wrapper
 """
+
+class Text(_BaseText, BaseFigure):
+
+    def __init__(self, x, y, **kwargs):
+        self.x = x
+        self.y = y
 
 # class Text(_BaseText, BaseFigure):
 

@@ -124,11 +124,10 @@ class Snake:
     def draw(self, eel):
         for i in self.body:
             if (i):
-                # r = Rectangle.new(i.x, i.y, width=self.grid, height=self.grid, fill=True)
-                # r.setColor(0, 200, 0)
-                # r(eel)
-                basicRec(i.x, i.y, self.grid, self.grid, eel)
-                # r = Sprite.new(i.x-self.grid/2, i.y-self.grid/2, width=self.grid, height=self.grid, img="turtle.jpg")
+                r = Rectangle(i.x, i.y, width=self.grid, height=self.grid, fill=True)
+                r.setColor(0, 200, 0)
+                r(eel)
+                # basicRec(i.x, i.y, self.grid, self.grid, eel)
 
     def getHead(self):
         return self.body[0]
@@ -155,7 +154,7 @@ def newApple():
 
     while not done:
         done = True
-        r = Vector(randint(0, WIDTH/SQ - 1) * SQ, randint(0, HEIGHT/SQ - 1) * SQ)
+        r = Vector(randint(0, WIDTH/SQ - 1) * SQ,randint(0, HEIGHT/SQ - 1) * SQ)
         for i in player.body:
             if i and r == i: done = False
 

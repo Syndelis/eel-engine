@@ -24,7 +24,7 @@ cdef extern from "eelData.h":
         
         _Color color
         float point_size
-        int mode, texture
+        unsigned int mode, texture
 
     cdef struct _PolygonContainer:
         _Polygon *poly

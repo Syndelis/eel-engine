@@ -37,7 +37,7 @@ struct _NewPolygon {
 
     struct _Color color;
     float point_size;
-    int mode, texture;
+    unsigned int mode, texture;
 
 };
 
