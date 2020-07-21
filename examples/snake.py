@@ -85,7 +85,7 @@ opos = {
 # Preloading Rectangles
 for y in range(HEIGHT//SQ):
     for x in range(WIDTH//SQ):
-        r = Rectangle.new(x*SQ, y*SQ, width=SQ, height=SQ, fill=True)
+        r = Rectangle(x*SQ, y*SQ, width=SQ, height=SQ, fill=True)
         r.setColor(0, 200, 0)
 
 class Snake:
@@ -126,7 +126,7 @@ class Snake:
             if (i):
                 r = Rectangle(i.x, i.y, width=self.grid, height=self.grid, fill=True)
                 r.setColor(0, 200, 0)
-                r(eel)
+                r.drawTo(eel)
                 # basicRec(i.x, i.y, self.grid, self.grid, eel)
 
     def getHead(self):
@@ -178,10 +178,7 @@ def startGame(eel):
 def playerLogic(eel):
     global player, maxtimer, timer, keys, opos, GAME_END
 
-    print(eel.fps)
-
     player.draw(eel)
-
     olddir = player.dir
 
     if keyPressed(256): exit()
@@ -208,9 +205,9 @@ def playerLogic(eel):
 def appleLogic(eel):
     global apple, player
 
-    r = Rectangle.new(apple.x, apple.y, width=SQ, height=SQ)
+    r = Rectangle(apple.x, apple.y, width=SQ, height=SQ, fill=True)
     r.setColor(200, 0, 0)
-    r(eel)
+    r.drawTo(eel)
 
     if apple == player.head:
         player.grow()
@@ -221,18 +218,18 @@ def appleLogic(eel):
 global lines
 lines = []
 for y in range(0, HEIGHT, SQ):
-    l = Line.new(0, y, xp=WIDTH, yp=y)
+    l = Line(0, y, xp=WIDTH, yp=y)
     l.setColor(50, 50, 50, 50)
     lines.append(l)
 
 for x in range(0, WIDTH, SQ):
-    l = Line.new(x, 0, xp=x, yp=HEIGHT)
+    l = Line(x, 0, xp=x, yp=HEIGHT)
     l.setColor(50, 50, 50, 50)
     lines.append(l)
 
 @e.draw
 def drawLines(eel):
     global lines
-    for i in lines: i(eel)
+    for i in lines: i.drawTo(eel)
 
 e.run()

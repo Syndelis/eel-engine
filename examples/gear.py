@@ -30,7 +30,6 @@ class Gear(BaseFigure):
         self.angle = angle * pi / 180
 
         self.used = round((inner_radius + outer_radius)/2 * 20 * precision)
-        print('points', self.used)
         self.dent_ratio = self.used // self.dents
 
     
@@ -53,7 +52,7 @@ class Gear(BaseFigure):
 e = Eel(vsync=False)
 
 global g
-g = Gear.new(300, 200, inner_radius=40, outer_radius=55)
+g = Gear(300, 200, inner_radius=40, outer_radius=55)
 
 @e.draw
 def render(eel):
@@ -62,7 +61,7 @@ def render(eel):
     fps = eel.fps or 60
 
     g.angle += 0.01 / fps * 60
-    g(eel)
-    Circle.new(300, 200, radius=20)(eel)
+    g.drawTo(eel)
+    Circle(300, 200, radius=20).drawTo(eel)
 
 e.run()

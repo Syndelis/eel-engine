@@ -24,7 +24,7 @@ e, a = Eel(), Eel()
 @a.draw
 def niceRectangle(eel):
 
-    Rectangle.new(300, 200, width=50, height=100)(eel)
+    Rectangle(300, 200, width=50, height=100).drawTo(eel)
 
 ar = Thread(target=a.run)
 ar.start()
