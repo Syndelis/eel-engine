@@ -12,25 +12,6 @@ struct _Color {
 };
 
 struct _Polygon {
-    // int used;
-
-    union {
-        int _data;
-        struct {
-            short int used;
-            byte mode, texture;
-        };
-    };
-
-    int hashdata;
-    float point_size;
-
-    struct _Color color;
-    struct _Point coord;
-    struct _Polygon *next;
-};
-
-struct _NewPolygon {
 
     float *x, *y;
     int used;
@@ -39,11 +20,6 @@ struct _NewPolygon {
     float point_size;
     unsigned int mode, texture;
 
-};
-
-struct _PolygonContainer {
-    struct _Polygon *poly;
-    struct _PolygonContainer *next;
 };
 
 struct _key {
