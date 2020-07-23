@@ -4,7 +4,8 @@
 #include <math.h>
 #include <stdio.h>
 
-typedef struct _Polygon Polygon;
+// -----------------------------------------------------------------------------
+// KEYBOARD INPUT
 
 void keyCallback(GLFWwindow *window, int key, int scan, int action, int mods) {
 
@@ -25,5 +26,22 @@ void keyCallback(GLFWwindow *window, int key, int scan, int action, int mods) {
 int _keyPressed(int key) {
 
     return key_pressed & (1ULL << key);
+
+}
+// -----------------------------------------------------------------------------
+// MOUSE INPUT
+
+void mouseCallback(GLFWwindow *window, int button, int action, int mods) {
+
+    if (action)
+        mouse_button |= 1 << button;
+
+    else mouse_button &= (~(1 << button));
+
+}
+
+int _mousePressed(int button) {
+
+    return mouse_button & (1 << button);
 
 }

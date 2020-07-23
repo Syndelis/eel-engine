@@ -101,6 +101,7 @@ cdef class Eel:
 
         glfwMakeContextCurrent(self.window)
         glfwSetKeyCallback(self.window, keyCallback)
+        glfwSetMouseButtonCallback(self.window, mouseCallback)
         glfwSwapInterval(1)
 
         self.window_open = 1
@@ -322,3 +323,11 @@ cpdef keyPressed(key):
 
     elif t == int:
         return _keyPressed(key)
+
+
+cpdef mousePressed(int button):
+    """
+    def mousePressed(button)
+    Returns wether or not said button is being pressed
+    """
+    return _mousePressed(button)

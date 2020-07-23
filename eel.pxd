@@ -72,3 +72,4 @@ cdef class Eel:
 Functions
 """
 cpdef keyPressed(key)
+cpdef mousePressed(int button)

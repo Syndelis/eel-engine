@@ -9,3 +9,6 @@ cdef extern from "eelCallbacks.h":
 
     void keyCallback(GLFWwindow *window, int key, int scan, int action, int mods)
     int _keyPressed(int key)
+
+    void mouseCallback(GLFWwindow *window, int button, int action, int mods)
+    int _mousePressed(int button)
