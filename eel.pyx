@@ -53,20 +53,6 @@ cdef class Eel:
     The window and graphics controller for the Eel Engine
     """
 
-    # # Drawing
-    # cdef public float point_size
-    # cdef public Color clear_color, draw_color
-
-    # # Window
-    # cdef GLFWwindow *window
-    # cdef int window_id, window_open
-    # cdef int width, height, x, y
-    # cdef public object name
-    # cdef public object decorated
-
-    # # Rendering
-    # cdef PolygonHead *list
-
     def __cinit__(
         self, name="Eel Engine", width=640, height=480, x=-1, y=-1,
         vsync=True
@@ -80,15 +66,9 @@ cdef class Eel:
         self.x = x
         self.y = y
 
-        self.list = NULL
         self.clear_color = [000, 000, 000, 255]
         self.draw_color  = [255, 255, 255, 255]
         self.point_size = 1.0
-
-        self.list = <PolygonContainer *> malloc(sizeof(PolygonContainer))
-        self.list.poly = NULL
-        self.list.next = NULL
-        self.last_used = self.list
 
         self.deco_draw = []
         self.deco_load = []
@@ -125,42 +105,6 @@ cdef class Eel:
 
         self.window_open = 1
 
-
-    cdef void submit(self, Polygon *poly):
-
-        cdef PolygonContainer *a = NULL
-        cdef PolygonContainer *b = self.last_used
-
-        # printf("Submitted polygon %d/%p\n", poly.hashdata, poly)
-
-        while (b != NULL and b.poly != NULL and\
-                (b.poly.used or b.poly.hashdata == poly.hashdata)):
-
-            if (b.poly.hashdata == poly.hashdata and b.poly == poly):
-                if (poly.next and poly.mode != GL_POINTS):
-                    b.poly.used = poly.next.used
-                    # printf("Renewed polygon\n")
-
-                else: b.poly.used = 1
-                return
-
-            a = b
-            b = b.next
-
-        if (b == NULL):
-            # printf("New polygon\n")
-            a.next = <PolygonContainer *> malloc(sizeof(PolygonContainer))
-            a = a.next
-
-            a.poly = poly
-            a.next = NULL
-            self.last_used = a
-
-        elif (b.poly == NULL or (not b.poly.used)):
-            # printf("Substituted polygon\n")
-            b.poly = poly
-            self.last_used = b
-
     
     cpdef setColor(self, int r, int g, int b, int a=255):
         """
@@ -196,56 +140,6 @@ cdef class Eel:
         self.point_size = size
 
 
-    cpdef invalidate(self):
-        """
-        def invalidate(self)
-        Invalidates the drawing linked list so that we can reuse allocated
-        resources.
-        """
-
-        cdef PolygonContainer *p = self.list
-        self.last_used = self.list
-
-        while (p != NULL):
-            if (p.poly):
-                p.poly.used = 0
-
-            p = p.next
-
-
-    cdef void printList(self):
-
-        cdef PolygonContainer *pc = self.list
-        cdef Polygon *p
-
-        printf("PRINTLIST\n")
-
-        while (pc != NULL):
-            p = pc.poly
-
-            while (p != NULL):
-                printf(
-                    "{x=%.6f, y=%.6f, used=%d, mode=%d, texture=%d, hashdata=%d, next=%p} -> \n",
-                    p.coord.x, p.coord.y, p.used, p.mode, p.texture, p.hashdata, p.next
-                )
-                p = p.next
-
-            pc = pc.next
-            printf("\b\b\b\b\n")
-
-
-    cdef int countList(self):
-
-        cdef PolygonContainer *p = self.list
-        cdef int i = 0
-
-        while (p != NULL):
-            i += 1
-            p = p.next
-
-        return i
-
-
     def draw(self, func):
         """
         Decorator for functions that should be called every frame
@@ -262,79 +156,8 @@ cdef class Eel:
         self.deco_load.append(func)
         return func
 
-    cdef display(self):
 
-        global keybuffer, keycount
-
-        cdef PolygonContainer *pc = self.list
-        cdef Polygon *p
-        cdef Polygon *r
-        cdef int count
-        cdef float width = 1.0#self.width * 1.0
-        cdef float height = 1.0#self.height * 1.0
-
-        cdef timespec temp
-
-        clock_gettime(CLOCK_MONOTONIC_RAW, &temp)
-
-        cdef float sub
-
-        if self.frame_read:
-            self._fps = 1.0 / (
-                temp.tv_sec - self.last_frame.tv_sec +\
-                (temp.tv_nsec - self.last_frame.tv_nsec) / 1000000000.0
-            )
-        
-        else: self.frame_read = 1
-        self.last_frame.tv_sec = temp.tv_sec
-        self.last_frame.tv_nsec = temp.tv_nsec
-
-        with nogil:
-
-            glEnable(GL_TEXTURE_2D)
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-            while (pc != NULL):
-
-                p = pc.poly
-                r = pc.poly
-
-                if not p:
-                    pc = pc.next
-                    continue
-
-                count = 0
-                if (r.texture):
-                    glBindTexture(GL_TEXTURE_2D, r.texture)
-
-                # printf("glBegin(%d);\n", r.mode)
-                glBegin(r.mode)
-                while (count < r.used):
-
-                    if (p.texture):
-                        glTexCoord2f(xcoord[count], ycoord[count])
-
-                    glColor4f(
-                        p.color.r / 255.0, p.color.g / 255.0,
-                        p.color.b / 255.0, p.color.a / 255.0
-                    )
-                    # printf("0x%x%x%x%x:", p.color.r, p.color.g, p.color.b, p.color.a)
-                    # printf("{%.6f, %.6f};\n", p.coord.x/width, p.coord.y/height)
-                    glPointSize(p.point_size)
-                    glVertex2f(p.coord.x / width, p.coord.y / height)
-                    p = p.next
-
-                    count += 1
-
-                glEnd()
-                # printf("\n")
-                # printf("glEnd();\n")
-                glBindTexture(GL_TEXTURE_2D, 0)
-                
-                pc = pc.next
-
-
-    cdef void render(self, NewPolygon *p):
+    cdef void render(self, Polygon *p):
 
         cdef int i
         cdef float x, y
@@ -357,6 +180,7 @@ cdef class Eel:
                 glVertex2f(p.x[i], p.y[i])
 
             glEnd()
+
     
     cpdef calculateFPS(self):
 
@@ -392,12 +216,6 @@ cdef class Eel:
 
         while (not glfwWindowShouldClose(self.window)):
 
-            self.invalidate()
-            # for i in self.deco_draw:
-            #     i(self)
-
-            # self.printList()
-
             glfwMakeContextCurrent(self.window)
 
             glClearColor(
@@ -421,7 +239,6 @@ cdef class Eel:
             glOrtho(0, ratio, 1., 0, 1., -1.)
             glViewport(0, 0, self.width, self.height)
 
-            # self.display()
             with nogil:
                 glEnable(GL_TEXTURE_2D)
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -455,14 +272,39 @@ cdef class Eel:
     cpdef getFps(self):
         return self._fps
 
+
     cpdef getDimensions(self):
         return (self.width, self.height)
+
+
+    cpdef setDimensions(self, dim):
+
+        cdef int w, h
+        w, h = dim
+
+        glfwSetWindowSize(self.window, w, h)
+
+
+    cpdef getMouse(self):
+        cdef double x, y
+        glfwGetCursorPos(self.window, &x, &y)
+
+        return (<int> x, <int> y)
+
+
+    cpdef setMouse(self, pos):
+
+        cdef int x, y
+        x, y = pos
+
+        glfwSetCursorPos(self.window, <double> x, <double> y)
 
     # TODO:
     # setFps: Locks fps
     # setDimensions: redimension window
     fps = property(getFps)
-    dimensions = property(getDimensions)
+    dimensions = property(getDimensions, setDimensions)
+    mouse = property(getMouse, setMouse)
 # ------------------------------------------------------------------------------
 """
 Functions
