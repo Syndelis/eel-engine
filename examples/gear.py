@@ -51,17 +51,22 @@ class Gear(BaseFigure):
 
 e = Eel(vsync=False)
 
-global g
+global g, c
 g = Gear(300, 200, inner_radius=40, outer_radius=55)
+c = Circle(300, 200, radius=20)
 
 @e.draw
 def render(eel):
-    global g
+    global g, c
 
     fps = eel.fps or 60
 
+    x, y = eel.mouse
+    g.x = c.x = x
+    g.y = c.y = y
+
     g.angle += 0.01 / fps * 60
     g.drawTo(eel)
-    Circle(300, 200, radius=20).drawTo(eel)
+    c.drawTo(eel)
 
 e.run()
