@@ -6,7 +6,7 @@ Imports
 from libc.stdio cimport printf
 from libc.stdlib cimport malloc, free, rand, srand
 from libc.time cimport time
-from libc.math cimport pi, cos, sin
+from libc.math cimport pi, cos, sin, pow, sqrt
 from libc.string cimport strlen, strcpy
 
 # Graphics (GL & SOIL)
@@ -16,6 +16,9 @@ from SOIL cimport *
 
 # Eel integration
 from eel cimport Eel
+
+# Python stdlib
+from abc import abstractmethod
 # ------------------------------------------------------------------------------
 """
 Data Structures
@@ -26,8 +29,6 @@ ctypedef _Character Character
 from eelData cimport *
 ctypedef _Point Point
 ctypedef _Polygon Polygon
-ctypedef _NewPolygon NewPolygon
-ctypedef _PolygonContainer PolygonContainer
 ctypedef _Color Color
 # ------------------------------------------------------------------------------
 """
@@ -39,7 +40,7 @@ cdef float uy[4096]
 
 cpdef basicRec(int x, int y, int width, int height, Eel eel):
 
-    cdef NewPolygon p
+    cdef Polygon p
     p.color = [0, 200, 0, 255]
     p.point_size = 1.
     p.mode = GL_POLYGON
@@ -66,11 +67,9 @@ cpdef basicRec(int x, int y, int width, int height, Eel eel):
 Buffer-less BaseFigure implementation
 """
 
-
-
 cdef class _BaseFigure:
 
-    cdef NewPolygon poly
+    cdef Polygon poly
 
     def __cinit__(self, x, y, **kwargs):
 
@@ -122,7 +121,6 @@ cdef class _BaseFigure:
         for x, y in lay:
             ux[count] = (self.x + x)*1.0 / eel.width
             uy[count] = (self.y + y)*1.0 / eel.height
-            # printf("%.10f %.10f\n", ux[count], uy[count])
             count += 1
 
         self.poly.x = ux
@@ -130,6 +128,80 @@ cdef class _BaseFigure:
         self.poly.used = <int> len(lay)
 
         eel.render(&self.poly)
+
+
+    cpdef collidesWith(self, _BaseFigure other):
+
+        cdef int x, y
+        cdef int minx, miny, maxx, maxy
+
+        # Minimum distance rule
+        cdef double dist
+        dist = sqrt(pow(self.x - other.x, 2) + pow(self.y - other.y, 2))
+
+        if dist > self.collisionDistance() + other.collisionDistance():
+            return False
+
+        # Check wether one of the center points is inside the other figure
+        if self.isInside(other.x, other.y) or other.isInside(self.x, self.y):
+            return True
+
+
+        sx, sy = self.collisionCenter()
+        ox, oy = other.collisionCenter()
+
+        if sx < ox:
+            minx = sx
+            maxx = ox
+
+        else:
+            minx = ox
+            maxx = sx
+
+        if sy < oy:
+            miny = sy
+            maxy = oy
+
+        else:
+            miny = oy
+            maxy = sy
+
+
+        # Collision in the line between centers
+        cdef int mx, my, i
+
+        # Approx.'ing to max
+        mx = (maxx + minx) / 2
+        my = (maxy + miny) / 2
+
+        for i in range(0, 4):
+
+            if self.isInside(mx, my) and other.isInside(mx, my):
+                return True
+
+            else:
+                mx = (maxx + mx) / 2
+                my = (maxy + my) / 2
+
+        # Approx.'ing to min
+        mx = (minx + (maxx + minx) / 2) / 2
+        my = (miny + (maxy + miny) / 2) / 2
+        for i in range(0, 4):
+
+            if self.isInside(mx, my) and other.isInside(mx, my):
+                return True
+
+            else:
+                mx = (minx + mx) / 2
+                my = (miny + my) / 2
+
+        # Rectangle between the centers
+        for y in range(miny, maxy):
+            for x in range(minx, maxx):
+                if self.isInside(x, y) and other.isInside(x, y):
+                    return True
+
+        return False
 # ------------------------------------------------------------------------------
 # TODO: Make it work with multiple fonts at a time
 # cdef Character *font
@@ -145,7 +217,6 @@ cdef class _BaseText(_BaseFigure):
     cdef char *text
     cdef char *fontname
     cdef Character *font
-    # cdef NewPolygon poly
 
     def __cinit__(self, x, y, *, char *text, char *font, int size=32, **kwargs):
         self.setText(text)
@@ -218,20 +289,36 @@ cdef class _BaseText(_BaseFigure):
             fx += (ch.advance >> 6) / width
 # ------------------------------------------------------------------------------
 """
-Base Figure Wrapper
+Wrappers
 """
 
-class BaseFigure(_BaseFigure): pass
-# ------------------------------------------------------------------------------
-"""
-Python's Text wrapper
-"""
+class BaseFigure(_BaseFigure):
+
+    @abstractmethod
+    def isInside(self, x, y): pass
+
+    @abstractmethod
+    def collisionDistance(self): pass
+
+    @abstractmethod
+    def collisionCenter(self): pass
+
 
 class Text(_BaseText, BaseFigure):
 
     def __init__(self, x, y, **kwargs):
         self.x = x
         self.y = y
+# ------------------------------------------------------------------------------
+"""
+Aux
+"""
+
+class NoPhysics:
+    def isInside(self, x, y): return False
+    def collisionDistance(self): return 0
+    def collisionCenter(self): return (self.x, self.y)
+
 # ------------------------------------------------------------------------------
 """
 Python Figures
@@ -258,8 +345,21 @@ class Rectangle(BaseFigure):
             (self.width, self.height), (0, self.height)
         ]
 
+    def isInside(self, x, y):
+        return (
+            x >= self.x and x < self.x+self.width and\
+            y >= self.y and y < self.y+self.height
+        )
 
-class Triangle(BaseFigure):
+    def collisionDistance(self):
+        return max(self.width, self.height) * 1.2
+
+    
+    def collisionCenter(self):
+        return (self.x+self.width/2, self.y+self.height/2)
+
+
+class Triangle(BaseFigure, NoPhysics):
 
     def __init__(self, x, y, *, radius, angle=0.0, fill=False):
 
@@ -310,7 +410,21 @@ class Circle(BaseFigure):
         return l
 
 
-class Sprite(BaseFigure):
+    def isInside(self, x, y):
+        return (
+            ((self.x - x)**2 + (self.y - y)**2) <= self.radius**2
+        )
+
+    
+    def collisionDistance(self):
+        return self.radius
+
+    
+    def collisionCenter(self):
+        return (self.x, self.y)
+
+
+class Sprite(Rectangle):
     
     def __init__(self, x, y, *, width, height, img):
 
@@ -332,7 +446,7 @@ class Sprite(BaseFigure):
         return [(w, -h), (w, h), (-w, h), (-w, -h)]
 
 
-class Line(BaseFigure):
+class Line(BaseFigure, NoPhysics):
 
     def __init__(self, x, y, *, xp, yp):
 
