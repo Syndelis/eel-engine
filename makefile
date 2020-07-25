@@ -16,15 +16,6 @@ libeelText.a: eelText.o
 eelText.o: eelText.c eelText.h
 	gcc -c $< -lfreetype -I/usr/include/freetype2
 
-test: test.c
-	gcc test.c -o test -lGL -lglfw -lm
-
-# eelCallbacks: eelCallbacks.h eelCallbacks.c
-# 	gcc -g -c eelCallbacks.c -lglfw -fPIC
-
-# eelData: eelData.pyx setupData.py
-# 	python3 setupData.py build --build-lib .
-
 # pxd:
 	# autopxd /usr/include/GLFW/glfw3.h glfw3.pxd -I /usr/include
 	# Misses some stuff ^
