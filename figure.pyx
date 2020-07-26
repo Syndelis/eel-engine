@@ -10,6 +10,7 @@ from libc.math cimport pi, cos, sin, pow, sqrt
 from libc.string cimport strlen, strcpy
 
 # Graphics (GL & SOIL)
+from glew cimport glewInit
 from gl cimport *
 from glfw3 cimport *
 from SOIL cimport *
@@ -46,6 +47,7 @@ cpdef basicRec(int x, int y, int width, int height, Eel eel):
     p.mode = GL_POLYGON
     p.texture = 0
     p.used = 4
+    p.program = 0
 
     l = [
             (0, 0), (width, 0),
@@ -76,6 +78,7 @@ cdef class _BaseFigure:
         self.poly.color = [255, 255, 255, 255]
         self.poly.mode = GL_LINE_LOOP
         self.poly.texture = 0
+        self.poly.program = 0
         self.point_size = 1.0
 
     
@@ -226,6 +229,7 @@ cdef class _BaseText(_BaseFigure):
         self.poly.mode = GL_QUADS
         self.poly.point_size = 1.
         self.poly.used = 4
+        self.poly.program = 1
 
         self.font = NULL
 

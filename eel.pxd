@@ -12,6 +12,7 @@ from libc.math cimport pi, cos, sin
 from posix.time cimport timespec
 
 # Graphics (GL + GLFW & SOIL)
+from glew cimport glewInit
 from glfw3 cimport *
 from gl cimport *
 from SOIL cimport *
@@ -21,6 +22,7 @@ Data Structures
 """
 from eelData cimport *
 from eelCallbacks cimport *
+from eelShader cimport *
 ctypedef _Point Point
 ctypedef _Polygon Polygon
 ctypedef _key Key

@@ -59,7 +59,7 @@ cdef extern from "<GLFW/glfw3.h>":
 
     void glAlphaFunc(GLenum func, GLclampf ref)
 
-    void glBlendFunc(GLenum sfactor, GLenum dfactor)
+    void glBlendFunc(GLenum sfactor, GLenum dfactor) nogil
 
     void glLogicOp(GLenum opcode)
 

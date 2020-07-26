@@ -14,7 +14,7 @@ cdef extern from "eelData.h":
         
         _Color color
         float point_size
-        unsigned int mode, texture
+        unsigned int mode, texture, program
 
     cdef struct _key:
         int key

@@ -1,4 +1,4 @@
-all: libeelText.a libeelCallbacks.a eelEngine
+all: libeelShader.a libeelText.a libeelCallbacks.a eelEngine
 
 eelEngine: eel.pyx setup.py
 	# python3 setup.py build --build-lib .
@@ -15,6 +15,12 @@ libeelText.a: eelText.o
 
 eelText.o: eelText.c eelText.h
 	gcc -c $< -lfreetype -I/usr/include/freetype2
+
+libeelShader.a: eelShader.o
+	ar rcs $@ $^
+
+eelShader.o: eelShader.c eelShader.h
+	gcc -c $< -lGL -lGLEW
 
 # pxd:
 	# autopxd /usr/include/GLFW/glfw3.h glfw3.pxd -I /usr/include

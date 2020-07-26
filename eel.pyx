@@ -12,6 +12,7 @@ from libc.math cimport pi, cos, sin
 from posix.time cimport clock_gettime, timespec, CLOCK_MONOTONIC_RAW
 
 # Graphics (GL + GLFW & SOIL)
+from glew cimport glewInit
 from glfw3 cimport *
 from gl cimport *
 from SOIL cimport *
@@ -170,7 +171,15 @@ cdef class Eel:
                 p.color.b / 255.0, p.color.a / 255.0
             )
             glPointSize(p.point_size)
-            glBindTexture(GL_TEXTURE_2D, p.texture)
+
+            if (not p.program):
+                glBindTexture(GL_TEXTURE_2D, p.texture)
+
+            else:
+                useTextShader(
+                    p.texture, p.color.r, p.color.g,
+                    p.color.b, p.color.a
+                )
 
             glBegin(p.mode)
             for i in range(0, p.used):
@@ -181,6 +190,7 @@ cdef class Eel:
                 glVertex2f(p.x[i], p.y[i])
 
             glEnd()
+            resetShader()
 
     
     cpdef calculateFPS(self):
@@ -242,6 +252,8 @@ cdef class Eel:
 
             with nogil:
                 glEnable(GL_TEXTURE_2D)
+                glEnable(GL_BLEND)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
                 glBindTexture(GL_TEXTURE_2D, 0)
                 

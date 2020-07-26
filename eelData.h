@@ -18,7 +18,7 @@ struct _Polygon {
 
     struct _Color color;
     float point_size;
-    unsigned int mode, texture;
+    unsigned int mode, texture, program;
 
 };
 

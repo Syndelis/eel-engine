@@ -18,7 +18,7 @@ for i in range(ATTEMPTS):
 e = Eel()
 
 t = Text(10, 200, text=b"The quick brown fox jumps over the lazy dog", font=b"Ubuntu-R.ttf")
-# t.font(b"Ubuntu-R.ttf", 24)
+t.setColor(255, 200, 0)
 
 @e.draw
 def txt(eel):

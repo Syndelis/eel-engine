@@ -8,3 +8,6 @@ cdef extern from "<GL/gl.h>":
     int GL_QUADS
     int GL_TEXTURE_2D
     int GL_LINE
+    int GL_BLEND
+    int GL_SRC_ALPHA
+    int GL_ONE_MINUS_SRC_ALPHA
