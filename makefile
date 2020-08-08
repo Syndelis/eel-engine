@@ -20,7 +20,7 @@ libeelShader.a: eelShader.o
 	ar rcs $@ $^
 
 eelShader.o: eelShader.c eelShader.h
-	gcc -c $< -lGL -lGLEW
+	gcc -c $< -lGL -lGLEW -Wno-discarded-qualifiers
 
 # pxd:
 	# autopxd /usr/include/GLFW/glfw3.h glfw3.pxd -I /usr/include

@@ -16,7 +16,7 @@ from glfw3 cimport *
 from SOIL cimport *
 
 # Eel integration
-from eel cimport Eel
+from eel cimport Paintable
 
 # Python stdlib
 from abc import abstractmethod
@@ -39,7 +39,7 @@ Functions
 cdef float ux[4096]
 cdef float uy[4096]
 
-cpdef basicRec(int x, int y, int width, int height, Eel eel):
+cpdef basicRec(int x, int y, int width, int height, Paintable eel):
 
     cdef Polygon p
     p.color = [0, 200, 0, 255]
@@ -72,6 +72,7 @@ Buffer-less BaseFigure implementation
 cdef class _BaseFigure:
 
     cdef Polygon poly
+    cdef int texture_set
 
     def __cinit__(self, x, y, **kwargs):
 
@@ -80,6 +81,7 @@ cdef class _BaseFigure:
         self.poly.texture = 0
         self.poly.program = 0
         self.point_size = 1.0
+        self.texture_set = 0
 
     
     cpdef setColor(self, byte r, byte g, byte b, byte a=255):
@@ -113,7 +115,7 @@ cdef class _BaseFigure:
         self.poly.point_size = ps
 
 
-    cpdef drawTo(self, Eel eel):
+    cpdef drawTo(self, Paintable eel):
 
         cdef int width = eel.width
         cdef int height = eel.height
@@ -122,7 +124,7 @@ cdef class _BaseFigure:
         cdef int count = 0
 
         for x, y in lay:
-            ux[count] = (self.x + x)*1.0 / eel.width
+            ux[count] = (self.x + x)*1.0 / eel.height
             uy[count] = (self.y + y)*1.0 / eel.height
             count += 1
 
@@ -248,7 +250,7 @@ cdef class _BaseText(_BaseFigure):
             self.font = NULL
 
 
-    cpdef drawTo(self, Eel eel):
+    cpdef drawTo(self, Paintable eel):
 
         cdef int i, j
         cdef char c
@@ -306,6 +308,14 @@ class BaseFigure(_BaseFigure):
 
     @abstractmethod
     def collisionCenter(self): pass
+
+    def getPos(self):
+        return self.x, self.y
+
+    def setPos(self, pos):
+        self.x, self.y = pos
+
+    pos = property(getPos, setPos)
 
 
 class Text(_BaseText, BaseFigure):

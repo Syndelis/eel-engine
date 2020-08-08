@@ -12,7 +12,7 @@ from libc.math cimport pi, cos, sin
 from posix.time cimport timespec
 
 # Graphics (GL + GLFW & SOIL)
-from glew cimport glewInit
+from glew cimport glewInit, glBindFramebuffer, glFramebufferTexture, glDrawBuffers, glCheckFramebufferStatus, glGenFramebuffers, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_COMPLETE
 from glfw3 cimport *
 from gl cimport *
 from SOIL cimport *
@@ -31,7 +31,39 @@ ctypedef _Color Color
 """
 Classes
 """
-cdef class Eel:
+cdef class Paintable:
+
+    cdef unsigned int framebuffer
+    cdef int _width, _height
+
+    cdef void render(self, Polygon *poly)
+
+
+cdef class Canvas(Paintable):
+
+    cdef unsigned int texture
+    cdef Polygon poly
+    cdef int _x, _y
+    cdef float posx[4]
+    cdef float posy[4]
+
+    cpdef drawTo(self, Paintable target)
+    cpdef clear(self)
+
+    cpdef getDimensions(self)
+    cpdef getWidth(self)
+    cpdef getHeight(self)
+
+    cpdef getX(self)
+    cpdef setX(self, int x)
+
+    cpdef getY(self)
+    cpdef setY(self, int y)
+
+    cpdef getPos(self)
+    cpdef setPos(self, pos)
+
+cdef class Eel(Paintable):
 
     # Drawing
     cdef public float point_size
@@ -40,7 +72,7 @@ cdef class Eel:
     # Window
     cdef GLFWwindow *window
     cdef int window_id, window_open
-    cdef int width, height, x, y
+    cdef int x, y
     cdef public object name
     cdef public object deco_draw
     cdef public object deco_load
@@ -66,6 +98,12 @@ cdef class Eel:
 
     cpdef getDimensions(self)
     cpdef setDimensions(self, dim)
+
+    cpdef getWidth(self)
+    cpdef setWidth(self, int width)
+
+    cpdef getHeight(self)
+    cpdef setHeight(self, int height)
 
     cpdef getMouse(self)
     cpdef setMouse(self, pos)

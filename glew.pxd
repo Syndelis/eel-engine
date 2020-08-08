@@ -3,6 +3,9 @@ from libc.stdint cimport int64_t, uint64_t
 cdef extern from "<GL/glew.h>":
 
     int GL_TEXTURE0
+    int GL_FRAMEBUFFER
+    int GL_COLOR_ATTACHMENT0
+    int GL_FRAMEBUFFER_COMPLETE
 
     struct __GLsync:
         pass
@@ -1974,7 +1977,7 @@ cdef extern from "<GL/glew.h>":
 
     ctypedef void (*PFNGLNAMEDFRAMEBUFFERPARAMETERIEXTPROC)(GLuint framebuffer, GLenum pname, GLint param)
 
-    ctypedef void (*PFNGLBINDFRAMEBUFFERPROC)(GLenum target, GLuint framebuffer)
+    ctypedef void (*PFNGLBINDFRAMEBUFFERPROC)(GLenum target, GLuint framebuffer) nogil
 
     ctypedef void (*PFNGLBINDRENDERBUFFERPROC)(GLenum target, GLuint renderbuffer)
 
@@ -3972,7 +3975,7 @@ cdef extern from "<GL/glew.h>":
 
     ctypedef void (*PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height)
 
-    ctypedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer)
+    ctypedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer) nogil
 
     ctypedef void (*PFNGLBINDRENDERBUFFEREXTPROC)(GLenum target, GLuint renderbuffer)
 
@@ -12945,3 +12948,13 @@ cdef extern from "<GL/glew.h>":
     GLubyte* glewGetErrorString(GLenum error)
 
     GLubyte* glewGetString(GLenum name)
+
+    GLuint glBindFramebuffer(GLenum target, GLuint framebuffer) nogil
+
+    void glFramebufferTexture(GLenum target, GLenum attachment, GLuint texture, GLint level) nogil
+
+    void glDrawBuffers(GLsizei n, GLenum* bufs) nogil
+
+    GLenum glCheckFramebufferStatus(GLenum target) nogil
+
+    void glGenFramebuffers(GLsizei n, GLuint* framebuffers) nogil

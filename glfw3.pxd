@@ -147,11 +147,11 @@ cdef extern from "<GLFW/glfw3.h>":
 
     void glMatrixMode(GLenum mode)
 
-    void glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near_val, GLdouble far_val)
+    void glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near_val, GLdouble far_val) nogil
 
     void glFrustum(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near_val, GLdouble far_val)
 
-    void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
+    void glViewport(GLint x, GLint y, GLsizei width, GLsizei height) nogil
 
     void glPushMatrix()
 
@@ -607,7 +607,7 @@ cdef extern from "<GLFW/glfw3.h>":
 
     void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
 
-    void glTexParameteri(GLenum target, GLenum pname, GLint param)
+    void glTexParameteri(GLenum target, GLenum pname, GLint param) nogil
 
     void glTexParameterfv(GLenum target, GLenum pname, GLfloat* params)
 
@@ -623,11 +623,11 @@ cdef extern from "<GLFW/glfw3.h>":
 
     void glTexImage1D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLint border, GLenum format, GLenum type, GLvoid* pixels)
 
-    void glTexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, GLvoid* pixels)
+    void glTexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, GLvoid* pixels) nogil
 
     void glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, GLvoid* pixels)
 
-    void glGenTextures(GLsizei n, GLuint* textures)
+    void glGenTextures(GLsizei n, GLuint* textures) nogil
 
     void glDeleteTextures(GLsizei n, GLuint* textures)
 
@@ -1552,7 +1552,7 @@ cdef extern from "<GLFW/glfw3.h>":
 
     ctypedef GLboolean (*PFNGLISFRAMEBUFFERPROC)(GLuint framebuffer)
 
-    ctypedef void (*PFNGLBINDFRAMEBUFFERPROC)(GLenum target, GLuint framebuffer)
+    ctypedef void (*PFNGLBINDFRAMEBUFFERPROC)(GLenum target, GLuint framebuffer) nogil
 
     ctypedef void (*PFNGLDELETEFRAMEBUFFERSPROC)(GLsizei n, GLuint* framebuffers)
 
