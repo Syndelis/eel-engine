@@ -29,4 +29,4 @@ eelShader.o: eelShader.c eelShader.h
 
 clean:
 	rm *.o *.a *.so
-	rm eel.c figure.c
+	rm eel.c figure.c shader.c

@@ -390,7 +390,6 @@ cdef class Eel(Paintable):
                 glEnable(GL_BLEND)
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-                glBindTexture(GL_TEXTURE_2D, 0)
                 
             glBindTexture(GL_TEXTURE_2D, 0)
             glColor4f(
