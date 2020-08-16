@@ -35,3 +35,6 @@ That function will be executed every time the `draw()` method of our window is c
 >>> window.run()
 ```
 You should now see the white outline of a rectangle in a 640x360 window. That's a pretty basic example, but you can check out more on the [/examples/](examples) directory. I recommend checking out [snake.py](examples/snake/snake.py) if you want to learn some basic stuff quickly.
+
+#### Documentation
+Check out [the official documentation](documentation.md)
