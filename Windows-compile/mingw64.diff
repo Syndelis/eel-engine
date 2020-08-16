@@ -1,0 +1,80 @@
+--- C:/Python27/Lib/distutils/distutils_orig.cfg	Wed Mar 30 17:35:24 2011
++++ C:/Python27/Lib/distutils/distutils.cfg	Wed Mar 30 12:32:45 2011
+@@ -0,0 +1,2 @@
++[build]
++compiler = mingw64
+
+
+--- C:/Python27/Lib/distutils/cygwinccompiler_orig.py	Sat Mar  6 22:02:08 2010
++++ C:/Python27/Lib/distutils/cygwinccompiler.py	Wed Mar 30 14:08:36 2011
+@@ -341,6 +341,58 @@
+ 
+ # class Mingw32CCompiler
+ 
++
++# the same as cygwin plus some additional parameters
++class Mingw64CCompiler (CygwinCCompiler):
++
++    compiler_type = 'mingw64'
++
++    def __init__ (self,
++                  verbose=0,
++                  dry_run=0,
++                  force=0):
++
++        CygwinCCompiler.__init__ (self, verbose, dry_run, force)
++
++        # ld_version >= "2.13" support -shared so use it instead of
++        # -mdll -static
++        if self.ld_version >= "2.13":
++            shared_option = "-shared"
++        else:
++            shared_option = "-mdll -static"
++
++        # A real mingw32 doesn't need to specify a different entry point,
++        # but cygwin 2.91.57 in no-cygwin-mode needs it.
++        if self.gcc_version <= "2.91.57":
++            entry_point = '--entry _DllMain@12'
++        else:
++            entry_point = ''
++
++        self.linker_dll='x86_64-w64-mingw32-gcc'
++
++        self.set_executables(compiler='x86_64-w64-mingw32-gcc -mno-cygwin -O -Wall',
++                             compiler_so='x86_64-w64-mingw32-gcc -mno-cygwin -mdll -O -Wall',
++                             compiler_cxx='x86_64-w64-mingw32-g++ -mno-cygwin -O -Wall',
++                             linker_exe='x86_64-w64-mingw32-gcc -mno-cygwin',
++                             linker_so='%s -mno-cygwin %s %s'
++                                        % (self.linker_dll, shared_option,
++                                           entry_point))
++        # Maybe we should also append -mthreads, but then the finished
++        # dlls need another dll (mingwm10.dll see Mingw32 docs)
++        # (-mthreads: Support thread-safe exception handling on `Mingw32')
++
++        # no additional libraries needed
++        self.dll_libraries=[]
++
++        # Include the appropriate MSVC runtime library if Python was built
++        # with MSVC 7.0 or later.
++        #self.dll_libraries = get_msvcr()
++
++    # __init__ ()
++
++# class Mingw64CCompiler
++
++
+ # Because these compilers aren't configured in Python's pyconfig.h file by
+ # default, we should at least warn the user if he is using a unmodified
+ # version.
+
+--- C:/Python27/Lib/distutils/ccompiler_orig.py	Sat Feb  6 19:15:50 2010
++++ C:/Python27/Lib/distutils/ccompiler.py	Wed Mar 30 12:28:26 2011
+@@ -984,6 +984,8 @@
+                                "Cygwin port of GNU C Compiler for Win32"),
+                    'mingw32': ('cygwinccompiler', 'Mingw32CCompiler',
+                                "Mingw32 port of GNU C Compiler for Win32"),
++                   'mingw64': ('cygwinccompiler', 'Mingw64CCompiler',
++                               "Mingw64 port of GNU C Compiler for Win64"),
+                    'bcpp':    ('bcppcompiler', 'BCPPCompiler',
+                                "Borland C++ Compiler"),
+                    'emx':     ('emxccompiler', 'EMXCCompiler',
