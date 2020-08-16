@@ -6,6 +6,34 @@ From basic to advanced, this document should list absolutely everything about th
 
 Note that this document refers to [Eel Engine Version 1.0, released in August 14th, 2020](https://github.com/Syndelis/eel-engine/tree/1.0). If this document is outdated, shame on me, really.
 
+- [Eel Engine Documentation](#eel-engine-documentation)
+  - [Getting Started](#getting-started)
+    - [Installation](#installation)
+    - [Understanding the modules](#understanding-the-modules)
+    - [Your first program](#your-first-program)
+  - [Module documentation](#module-documentation)
+    - [Eel module](#eel-module)
+      - [Functions](#functions)
+      - [Classes](#classes)
+        - [Methods](#methods)
+        - [Attributes](#attributes)
+          - [Read-only](#read-only)
+          - [Writeables](#writeables)
+        - [Methods](#methods-1)
+        - [Attributes](#attributes-1)
+          - [Read-only](#read-only-1)
+          - [Writeables](#writeables-1)
+    - [Figure module](#figure-module)
+      - [Classes](#classes-1)
+        - [Methods](#methods-2)
+        - [Methods](#methods-3)
+        - [Methods](#methods-4)
+        - [Methods](#methods-5)
+        - [Methods](#methods-6)
+        - [Methods](#methods-7)
+    - [Shader module](#shader-module)
+      - [Classes](#classes-2)
+        - [Methods](#methods-8)
 [TOC]
 
 ---
