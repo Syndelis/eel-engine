@@ -25,7 +25,7 @@ void keyCallback(GLFWwindow *window, int key, int scan, int action, int mods) {
 
 int _keyPressed(int key) {
 
-    return key_pressed & (1ULL << key);
+    return (key_pressed & (1ULL << key)) > 0ULL;
 
 }
 // -----------------------------------------------------------------------------

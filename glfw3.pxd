@@ -16,6 +16,10 @@ cdef extern from "<GLFW/glfw3.h>":
 
     int GLFW_MOD_SHIFT
     int GLFW_MOD_CAPS_LOCK
+    int GLFW_DOUBLEBUFFER
+    int GLFW_TRANSPARENT_FRAMEBUFFER
+    int GLFW_TRUE
+    int GLW_FALSE
 
     ctypedef unsigned int GLenum
 

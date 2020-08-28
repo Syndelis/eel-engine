@@ -220,17 +220,19 @@ cdef class Eel(Paintable):
 
     def __cinit__(
         self, name="Eel Engine", width=640, height=480, x=-1, y=-1,
-        vsync=True
+        vsync=True, fullscreen=False
     ):
         
         global glfw_initialized
 
         # Initialization related
+        self.window = NULL
         self.name = bytes(name, "utf8")
         self._width = width
         self._height = height
         self.x = x
         self.y = y
+        self.fullscreen = fullscreen
 
         # Drawing related
         self.clear_color = [000, 000, 000, 255]
@@ -253,16 +255,41 @@ cdef class Eel(Paintable):
                 raise Exception("GLFW could not be initialized")
 
 
+    def __dealloc__(self):
+        if self.window: glfwSetWindowShouldClose(self.window, 1);
+
+
+    cpdef close(self):
+        glfwSetWindowShouldClose(self.window, 1);
+
+
     cpdef open(self):
         """
         def open(self)
         Opens a new window with the specified parameters during __init__()
         """
 
-        if not self.vsync: glfwWindowHint(0x00021010, 0)
+        if not self.vsync: glfwWindowHint(GLFW_DOUBLEBUFFER, 0)
 
         self.window = glfwCreateWindow(
-            self.width, self.height, self.name, NULL, NULL)
+            self.width, self.height, self.name,
+            NULL , NULL
+        )
+
+        cdef GLFWmonitor *monitor
+        cdef GLFWvidmode *mode
+        cdef int monX, monY, monWidth, monHeight
+
+        if self.fullscreen:
+            monitor = glfwGetPrimaryMonitor()
+            mode = glfwGetVideoMode(monitor)
+
+            glfwGetMonitorWorkarea(monitor, &monX, &monY, &monWidth, &monHeight)
+            glfwSetWindowMonitor(
+                self.window, monitor, 0, 0, mode.width, mode.height,
+                mode.refreshRate
+            )
+
 
         if (not self.window):
             glfwTerminate()
@@ -472,6 +499,15 @@ cdef class Eel(Paintable):
 
         glfwSetCursorPos(self.window, <double> x, <double> y)
 
+
+    cpdef getOpacity(self):
+        return glfwGetWindowOpacity(self.window)
+
+
+    cpdef setOpacity(self, float op):
+        glfwSetWindowOpacity(self.window, min(max(0., op), 1.))
+
+
     # TODO:
     # setFps: Locks fps
     # setDimensions: redimension window
@@ -480,6 +516,7 @@ cdef class Eel(Paintable):
     width = property(getWidth, setWidth)
     height = property(getHeight, setHeight)
     mouse = property(getMouse, setMouse)
+    opacity = property(getOpacity, setOpacity)
 # ------------------------------------------------------------------------------
 """
 Functions

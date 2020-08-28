@@ -73,6 +73,7 @@ cdef class Eel(Paintable):
     cdef GLFWwindow *window
     cdef int window_id, window_open
     cdef int x, y
+    cdef byte fullscreen
     cdef public object name
     cdef public object deco_draw
     cdef public object deco_load
@@ -83,6 +84,7 @@ cdef class Eel(Paintable):
     cdef float _fps
     cdef byte vsync
 
+    cpdef close(self)
     cpdef open(self)
 
     cdef void render(self, Polygon *poly)
@@ -107,6 +109,9 @@ cdef class Eel(Paintable):
 
     cpdef getMouse(self)
     cpdef setMouse(self, pos)
+
+    cpdef getOpacity(self)
+    cpdef setOpacity(self, float op)
 # ------------------------------------------------------------------------------
 """
 Functions
