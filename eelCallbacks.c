@@ -28,6 +28,12 @@ int _keyPressed(int key) {
     return (key_pressed & (1ULL << key)) > 0ULL;
 
 }
+
+void _keyRelease(int key) {
+
+    key_pressed &= (~(1ULL << key));
+
+}
 // -----------------------------------------------------------------------------
 // MOUSE INPUT
 
@@ -43,5 +49,11 @@ void mouseCallback(GLFWwindow *window, int button, int action, int mods) {
 int _mousePressed(int button) {
 
     return mouse_button & (1 << button);
+
+}
+
+void _mouseRelease(int button) {
+
+    mouse_button &= (~(1 << button));
 
 }

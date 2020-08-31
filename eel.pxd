@@ -117,4 +117,5 @@ cdef class Eel(Paintable):
 Functions
 """
 cpdef keyPressed(key)
+cpdef keyRelease(key)
 cpdef mousePressed(int button)

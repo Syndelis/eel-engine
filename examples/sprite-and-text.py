@@ -9,25 +9,26 @@ for i in range(ATTEMPTS):
 
     try:
         from eel import Eel
-        from figure import Text, Rectangle, Sprite
+        from figure import Rectangle, Sprite, Font
         break
 
     except ModuleNotFoundError:
         path.insert(0, '..' * (i+1))
 
 e = Eel()
-
-t = Text(10, 200, text=b"The quick brown fox jumps over the lazy dog", font=b"Ubuntu-R.ttf")
-t.setColor(255, 200, 0)
 r = Rectangle(100, 200, width=50, height=50, fill=True)
 
-global s
-s = None
+global s, f, t, my_text
+s = f = t = None
+my_text = "The quick brown fox jumps over the lazy dog"
 
 @e.load
 def load(eel):
-    global s
+    global s, f, t, my_text
     s = Sprite(200, 200, width=70, height=70, img="turtle.jpg")
+    f = Font("Ubuntu-R.ttf")
+    t = f.text(10, 200, bytes(my_text, "utf-8"))
+    t.setColor(255, 0, 200)
 
 @e.draw
 def txt(eel):

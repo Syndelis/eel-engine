@@ -529,11 +529,25 @@ cpdef keyPressed(key):
     """
     t = type(key)
 
-    if t == bytes or t == str:
+    if t is bytes or t is str:
         return _keyPressed(ord(key))
 
-    elif t == int:
+    elif t is int:
         return _keyPressed(key)
+
+
+cpdef keyRelease(key):
+    """
+    def keyRelease(key)
+    Virtually releases the keyboard key
+    """
+    t =  type(key)
+
+    if t is bytes or t is str:
+        _keyRelease(ord(key))
+
+    elif t is int:
+        _keyRelease(key)
 
 
 cpdef mousePressed(int button):
@@ -542,3 +556,11 @@ cpdef mousePressed(int button):
     Returns wether or not said button is being pressed
     """
     return _mousePressed(button)
+
+
+cpdef mouseRelease(int button):
+    """
+    def mouseRelease(button)
+    Virtually releases the mouse button
+    """
+    _mouseRelease(button)

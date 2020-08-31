@@ -11,6 +11,9 @@ Note that this document refers to [Eel Engine Version 1.0, released in August 14
     - [Installation](#installation)
     - [Understanding the modules](#understanding-the-modules)
     - [Your first program](#your-first-program)
+  - [Advanced techniques](#advanced-techniques)
+    - [The load decorator](#the-load-decorator)
+    - [Resource Management](#resource-management)
   - [Module documentation](#module-documentation)
     - [Eel module](#eel-module)
       - [Functions](#functions)
@@ -31,9 +34,10 @@ Note that this document refers to [Eel Engine Version 1.0, released in August 14
         - [Methods](#methods-5)
         - [Methods](#methods-6)
         - [Methods](#methods-7)
+        - [Methods](#methods-8)
     - [Shader module](#shader-module)
       - [Classes](#classes-2)
-        - [Methods](#methods-8)
+        - [Methods](#methods-9)
 [TOC]
 
 ---
@@ -158,6 +162,44 @@ And that covers the basic. If you understood the above, you should be able to un
 
 ---
 
+## Advanced techniques
+
+In this section, you will learn how to use your system resources more efficiently and write better code for your game overall.
+
+### The load decorator
+
+In the previous section you were presented to the `draw` decorator, that looks like this
+
+```python
+@window.draw
+def drawMyGame(eel):
+    ...
+```
+
+The `draw` decorator will have the decorated functions run every frame and is a must for your game's logic and drawing. 
+
+However, there are some times when you need to have functions be executed only once, and for that reason we have the `load` decorator.
+
+```python
+@window.load
+def initializePlayer(eel):
+    # This will be executed only once
+    global player
+    player = Knight()
+```
+
+You might think this is not that useful, but there's a good reason for its existance. Some assets like `figure.Text`, `figure.Sprite` and `shader.Shader` **need** to be initialized only after a window has been opened. If you are interested in the why, that's because they need an OpenGL context to exist, and that only happens after the window is open.
+
+That makes the `load` decorator perfect for this kind of situation, since it will run only once and exactly after the window has ben opened.
+
+We will see extensive usage of this feature in the next section.
+
+---
+
+### Resource Management
+
+---
+
 ## Module documentation
 
 ### Eel module
@@ -210,24 +252,24 @@ def changeStage(eel):
 ##### Methods
 
 * `__init__(self, name="Eel Engine", width=640, height=480, vsync=True)`
-    Class constructor
+    Class constructor.
 
 * `draw(self, function)`
-    Decorator for functions that should be called every frame
+    Decorator for functions that should be called every frame.
     ```python
     @window.draw
     def myDrawFunc(eel): pass
     ```
 
 * `load(self, function)`
-    Decorator for functions that should only run once
+    Decorator for functions that should only run once.
     ```python
     @window.load
     def setupFunc(eel): pass
     ```
 
 * `run(self)`
-    Opens and starts drawing in the window
+    Opens and starts drawing in the window.
 
 * `setClearColor(self, r: int, g: int, b: int, a=255)`
 
@@ -248,13 +290,13 @@ def changeStage(eel):
 ##### Methods
 
 * `__init__(self, width=640, height=480, x=0, y=0)`
-    Class constructor
+    Class constructor.
 
 * `clear(self)`
-    Clears the canvas
+    Clears the canvas.
 
 * `drawTo(self, target: eel.Paintable)`
-    Renders the canvas to the target
+    Renders the canvas to the target.
 
 ##### Attributes
 ###### Read-only
@@ -279,15 +321,39 @@ Drawing module
 ##### Methods
 
 * `__init__(self, x, y, **kwargs)`
-    Class constructor
+    Class constructor.
+    ```
+    ```
 
 * `setColor(self, r: int, g: int, b: int, a=255)`
+    Set the figure's drawing color.
+    ```
+    ```
 * `setMode(self, mode: int)`
+    Set the figure's drawing mode. This is generally not used because most figures have the `fill` parameter in their constructor.
+
+    The `mode` parameter should be a GL constant like `GL_LINES`, `GL_POLYGON`, etc.
+    ```
+    ```
 * `setTexture(self, img_file: str)`
+    Opens and loads an image file as the figure's texture.
+    ```
+    ```
 * `setByteTexture(self, texture: int)`
+    Sets the OpenGL texture object of the figure. This is highly useful when having multiple objects have the same texture because this avoids the need to keep reopening the source file.
+
+    More support for this type of memory management is coming to a later version of Eel.
+    ```
+    ```
 * `setPointSize(self, ps: float)`
 * `drawTo(self, target: eel.Paintable)`
+    Renders the figure to the specified `target`.
+    ```
+    ```
 * `collidesWith(self, other: figure.BaseFigure) -> bool`
+    Checks wether the current instance collides with another figure. This method utilizes of other methods like `collisionDistance()` and `collisionCenter()`. Some figures like the Triangle don't have this method implemented yet and so the abstract class `figure.NoPhysics` was created for figures that shouldn't be able to collide.
+
+    In the current version, the Triangle does not inherit from `figure.NoPhysics`, but that will be fixed in the next version.
 
 ---
 
@@ -296,17 +362,25 @@ Drawing module
 ##### Methods
 
 * `__init__(self, x, y, *, width, height, fill=False)`
-    Class constructor
-
+    Class constructor.
+    ```
+    ```
 * `layout(self) -> list[tuple]`
+    Returns the list of vertices of how the figure should look like.
+    ```
+    ```
 * `isInside(self, x, y) -> bool`
-    Returns wether said point is inside the shape
+    Returns wether said point is inside the shape.
+    ```
+    ```
 
 * `collisionDistance(self) -> int`
-    Returns the minimum distance another object has to be for a collision to be feasible
+    Returns the minimum distance another object has to be for a collision to be feasible.
+    ```
+    ```
 
 * `collisionCenter(self) -> int`
-    Returns the collision's anchor point
+    Returns the collision's anchor point.
 
 ---
 
@@ -314,7 +388,7 @@ Drawing module
 
 ##### Methods
 * `__init__(self, x, y, *, radius, angle=0.0, fill=False)`
-    Class constructor
+    Class constructor.
 
 * `layout(self) -> list[tuple]`
 
@@ -325,17 +399,25 @@ Drawing module
 ##### Methods
 
 * `__init__(self, x, y, *, radius, precision=1, fill=False)`
-    Class constructor
+    Class constructor.
+    ```
+    ```
 
 * `layout(self) -> list[tuple]`
 * `isInside(self, x, y) -> bool`
-    Returns wether said point is inside the shape
+    Returns wether said point is inside the shape.
+    ```
+    ```
 
 * `collisionDistance(self) -> int`
-    Returns the minimum distance another object has to be for a collision to be feasible
+    Returns the minimum distance another object has to be for a collision to be feasible.
+    ```
+    ```
 
 * `collisionCenter(self) -> int`
-    Returns the collision's anchor point
+    Returns the collision's anchor point.
+    ```
+    ```
 
 ---
 
@@ -343,7 +425,9 @@ Drawing module
 
 ##### Methods
 * `__init__(self, x, y, *, width, height, img: str)`
-    Class constructor
+    Class constructor.
+    ```
+    ```
 
 * `layout(self) -> list[tuple]`
 
@@ -353,9 +437,35 @@ Drawing module
 
 ##### Methods
 * `__init__(self, x, y, *, xp, yp)`
-    Class constructor
+    Class constructor.
+    ```
+    ```
 
 * `layout(self) -> list[tuple]`
+
+
+---
+
+==`figure.Text(figure._BaseText, figure.BaseFigure)`==
+
+##### Methods
+* `__init__(self, x, y, text: bytes, font: bytes, size=32)`
+    Class constructor.
+    ```
+    ```
+
+* `setText(self, text: bytes)`
+    Sets the text to be drawn in the next drawing call.
+    ```
+    ```
+
+* `setFont(self, fontname: bytes, size=32)`
+    Sets a new font for the text object.
+    ```
+    ```
+
+* `drawTo(self, target: eel.Paintable)`
+    Renders the text to the specified target.
 
 ---
 
@@ -369,13 +479,21 @@ Shading module
 ##### Methods
 
 * `__init__(self, vertstr: str, fragstr: str)`
-    Class constructor
+    Class constructor.
+    ```
+    ```
 
 * `use(self)`
-    Enables shader. Automatically used when using the `with` statement
+    Enables shader. Automatically used when using the `with` statement.
+    ```
+    ```
 
 * `stop(self)`
-    Disables shader. Automatically used when using the `with` statement
+    Disables shader. Automatically used when using the `with` statement.
+    ```
+    ```
 
 * `getProgram(self) -> int`
-* `setUniform(self, name: str, values)`
+* `setUniform(self, name: str, values: Iterable)`
+    Sets the shader uniform named `name`. The `values` parameter should be a collection of the values you want to pass to the uniform.
+    Note that even uniforms of one value should still be passed as an Iterable.

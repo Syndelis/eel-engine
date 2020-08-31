@@ -218,14 +218,10 @@ Base Text (Cython Implementation)
 
 cdef class _BaseText(_BaseFigure):
 
-    cdef int textlen, fontsize
-    cdef char *text
-    cdef char *fontname
+    cdef char *str
     cdef Character *font
 
-    def __cinit__(self, x, y, *, char *text, char *font, int size=32, **kwargs):
-        self.setText(text)
-        self.setFont(font, size)
+    def __cinit__(self, int x, int y, text, _BaseFont font=None):
 
         self.poly.color = [255, 255, 255, 255]
         self.poly.mode = GL_QUADS
@@ -234,65 +230,191 @@ cdef class _BaseText(_BaseFigure):
         self.poly.program = 1
 
         self.font = NULL
+        if font:
+            self.font = font.font
+            # self.poly.color = font.color
+
+        if type(text) is not bytes: text = bytes(text, "utf-8")
+        self.str = <char *> malloc(sizeof(char) * strlen(text))
+        strcpy(self.str, text)
 
 
-    cpdef setText(self, char *text):
-        self.text = text
-        self.textlen = strlen(text)
-
-
-    cpdef setFont(self, char *fontname, int size=32):
-        self.fontname = fontname
-        self.fontsize = size
-
-        if self.font:
-            free(self.font)
-            self.font = NULL
+    def __dealloc__(self):
+        free(self.str)
 
 
     cpdef drawTo(self, Paintable eel):
 
-        cdef int i, j
-        cdef char c
+        cdef int i = 0
         cdef Character *ch
-        
-        cdef float xpos, ypos, fx, fy, w, h, width, height
+        cdef float xpos, ypos, fx, fy, width, height
+
         width = eel.width * 1.
         height = eel.height * 1.
 
         fx = self.x / width
         fy = self.y / height
 
-        # NOTE: IF I EVER REWORK THE ENGINE
-        # The font must be loaded after a GL context has been initialized
-        # i.e. e.run()
-
-        if (not self.font):
-            self.font = loadCharacters(self.fontname, self.fontsize)
-
-        for i in range(0, self.textlen):
-            c = self.text[i]
-            ch = self.font + c
+        # for i in range(0, self.chlen):
+        while (self.str[i]):
+            ch = self.font + self.str[i]
 
             xpos = fx + ch.bear.x / width
             ypos = fy + (ch.size.y - ch.bear.y) / height
 
-            w = ch.size.x / width
-            h = ch.size.y / height
-
-            ux[0] = ux[1] = xpos + w
+            ux[0] = ux[1] = xpos + ch.size.x / width
             ux[2] = ux[3] = xpos
 
             uy[0] = uy[3] = ypos
-            uy[1] = uy[2] = ypos - h
+            uy[1] = uy[2] = ypos - ch.size.y / height
 
             self.poly.x = ux
             self.poly.y = uy
             self.poly.texture = ch.TextureID
 
             eel.render(&self.poly)
-
             fx += (ch.advance >> 6) / width
+
+            i += 1
+
+
+    cpdef getText(self):
+        return self.str
+
+
+    cpdef setText(self, text):
+        # self.str = text
+        if type(text) is not bytes: text = bytes(text, "utf-8")
+        free(self.str)
+        self.str = <char *> malloc(sizeof(char) * strlen(text))
+        strcpy(self.str, text)
+
+
+    cpdef getWidth(self):
+
+        cdef int x = 0
+        cdef int i = 0
+        cdef Character *ch
+
+        cdef int ln = strlen(self.str)
+
+        # for i in range(0, ln):
+        while (self.str[i]):
+            ch = self.font + self.str[i]
+            x += (ch.advance >> 6)
+
+            i += 1
+
+        return x
+
+
+    cpdef getHeight(self):
+        
+        cdef int y = 0
+        cdef int i = 0
+        cdef Character *ch
+
+        cdef int ln = strlen(self.str)
+
+        # for i in range(0, ln):
+        while (self.str[i]):
+            ch = self.font + self.str[i]
+            y = max(y, ch.size.y)
+
+            i += 1
+
+        return y
+
+
+    cpdef setFont(self, _BaseFont font):
+        self.font = font.font
+
+    
+    text = property(getText, setText)
+    width = property(getWidth)
+    height = property(getHeight)
+
+
+class Text(_BaseText, _BaseFigure):
+
+    def __init__(self, x, y, **kwargs):
+        self.x = x
+        self.y = y
+
+
+cdef class _BaseFont:
+
+    cdef Character *font
+    cdef int _size
+    # cdef Color color
+
+    def __cinit__(self, name: str, int size=32):
+
+        self._size = size
+        self.name = bytes(name, "utf-8")
+        self.setFont(self.name, size)
+
+
+    cpdef text(self, int x, int y, text):
+        return Text(x, y, text=text, font=self)
+
+
+    cdef void setFont(self, char *name, int size=32):
+
+        self.font = loadCharacters(name, size)
+
+        if self.font == NULL:
+            raise Exception(
+                "Font initialized or modified with no active GL context.")
+
+
+    cpdef widthOf(self, char *text):
+
+        cdef int x = 0
+        cdef int i = 0
+        cdef Character *ch
+
+        cdef int ln = strlen(text)
+
+        # for i in range(0, ln):
+        while (text[i]):
+            ch = self.font + text[i]
+            x += (ch.advance >> 6)
+
+            i += 1
+
+        return x
+
+
+    cpdef heightOf(self, char *text):
+        
+        cdef int y = 0
+        cdef int i = 0
+        cdef Character *ch
+
+        cdef int ln = strlen(text)
+
+        # for i in range(0, ln):
+        while (text[i]):
+            ch = self.font + text[i]
+            y = max(y, ch.size.y)
+
+            i += 1
+
+        return y
+
+
+    cpdef getSize(self):
+        return self._size
+
+        
+    cpdef setSize(self, int size=32):
+        if (self._size != size):
+            self._size = size
+            self.setFont(self.name, size)
+
+
+    size = property(getSize, setSize)
 # ------------------------------------------------------------------------------
 """
 Wrappers
@@ -318,11 +440,7 @@ class BaseFigure(_BaseFigure):
     pos = property(getPos, setPos)
 
 
-class Text(_BaseText, BaseFigure):
-
-    def __init__(self, x, y, **kwargs):
-        self.x = x
-        self.y = y
+class Font(_BaseFont): pass
 # ------------------------------------------------------------------------------
 """
 Aux

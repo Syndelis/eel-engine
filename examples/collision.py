@@ -8,24 +8,30 @@ for i in range(ATTEMPTS):
 
     try:
         from eel import Eel
-        from figure import Circle, Text, Line, Rectangle
+        from figure import Circle, Text, Line, Rectangle, Font
         break
 
     except ModuleNotFoundError:
         path.insert(0, '..')
 
-window = Eel()
+window = Eel(vsync=False)
 
 c = Rectangle(0, 0, width=40, height=40)
 w, h = window.dimensions
 d = Circle(w/2, h/2, radius=60, fill=True)
 d.setColor(80, 170, 80, 255)
 
-t = Text(20, 20, text=b'False', font=b'Ubuntu-R.ttf')
+global t
+t = None
 
 xp, yp = d.collisionCenter()
 l = Line(c.x, c.y, xp=xp, yp=yp)
 r = Rectangle(c.x, c.y, width=c.x-xp, height=c.y-yp)
+
+@window.load
+def loadFont(eel):
+    global t
+    t = Font("Ubuntu-R.ttf").text(20, 20, text=b'False')
 
 @window.draw
 def main(eel):
