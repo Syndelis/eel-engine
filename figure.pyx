@@ -218,7 +218,8 @@ Base Text (Cython Implementation)
 
 cdef class _BaseText(_BaseFigure):
 
-    cdef char *str
+    # cdef char *str
+    cdef int _strlen
     cdef Character *font
 
     def __cinit__(self, int x, int y, text, _BaseFont font=None):
@@ -234,13 +235,15 @@ cdef class _BaseText(_BaseFigure):
             self.font = font.font
             # self.poly.color = font.color
 
-        if type(text) is not bytes: text = bytes(text, "utf-8")
-        self.str = <char *> malloc(sizeof(char) * strlen(text))
-        strcpy(self.str, text)
+        # if type(text) is not bytes: text = bytes(text, "utf-8")
+        # self.str = <char *> malloc(sizeof(char) * strlen(text))
+        # strcpy(self.str, text)
 
+        self.str = text if type(text) is bytes else bytes(text, "utf-8")
+        self._strlen = len(self.str)
 
-    def __dealloc__(self):
-        free(self.str)
+    # def __dealloc__(self):
+        # free(self.str)
 
 
     cpdef drawTo(self, Paintable eel):
@@ -255,9 +258,8 @@ cdef class _BaseText(_BaseFigure):
         fx = self.x / width
         fy = self.y / height
 
-        # for i in range(0, self.chlen):
-        while (self.str[i]):
-            ch = self.font + self.str[i]
+        for i in range(0, self._strlen):
+            ch = self.font + <char>self.str[i]
 
             xpos = fx + ch.bear.x / width
             ypos = fy + (ch.size.y - ch.bear.y) / height
@@ -283,11 +285,12 @@ cdef class _BaseText(_BaseFigure):
 
 
     cpdef setText(self, text):
-        # self.str = text
-        if type(text) is not bytes: text = bytes(text, "utf-8")
-        free(self.str)
-        self.str = <char *> malloc(sizeof(char) * strlen(text))
-        strcpy(self.str, text)
+        self.str = text
+        self._strlen = len(text)
+        # if type(text) is not bytes: text = bytes(text, "utf-8")
+        # free(self.str)
+        # self.str = <char *> malloc(sizeof(char) * strlen(text))
+        # strcpy(self.str, text)
 
 
     cpdef getWidth(self):
@@ -300,7 +303,7 @@ cdef class _BaseText(_BaseFigure):
 
         # for i in range(0, ln):
         while (self.str[i]):
-            ch = self.font + self.str[i]
+            ch = self.font + <char>self.str[i]
             x += (ch.advance >> 6)
 
             i += 1
@@ -318,7 +321,7 @@ cdef class _BaseText(_BaseFigure):
 
         # for i in range(0, ln):
         while (self.str[i]):
-            ch = self.font + self.str[i]
+            ch = self.font + <char>self.str[i]
             y = max(y, ch.size.y)
 
             i += 1

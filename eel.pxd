@@ -118,4 +118,6 @@ Functions
 """
 cpdef keyPressed(key)
 cpdef keyRelease(key)
+cdef char _getChar()
+cpdef getText()
 cpdef mousePressed(int button)

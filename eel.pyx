@@ -16,6 +16,9 @@ from glew cimport glewInit, glBindFramebuffer, glFramebufferTexture, glDrawBuffe
 from glfw3 cimport *
 from gl cimport *
 from SOIL cimport *
+
+# Python STDLIB
+from ctypes import c_ubyte
 # ------------------------------------------------------------------------------
 """
 Data Structuresa
@@ -42,6 +45,8 @@ cdef float ycoord[4]
 xcoord[0] = xcoord[1] = ycoord[0] = ycoord[3] = 1
 xcoord[2] = xcoord[3] = ycoord[1] = ycoord[2] = 0
 
+# ------------------------------------------------------------------------------
+__version__ = 1.2
 # ------------------------------------------------------------------------------
 """
 Eel's Paintable Superclass
@@ -297,6 +302,7 @@ cdef class Eel(Paintable):
 
         glfwMakeContextCurrent(self.window)
         glfwSetKeyCallback(self.window, keyCallback)
+        glfwSetCharCallback(self.window, charCallback)
         glfwSetMouseButtonCallback(self.window, mouseCallback)
         glfwSwapInterval(1)
 
@@ -548,6 +554,27 @@ cpdef keyRelease(key):
 
     elif t is int:
         _keyRelease(key)
+
+
+cdef char _getChar():
+    """
+    def _getChar()
+    Returns the last typed character
+    """
+
+    return _popChar() if _charCount() else 0
+
+
+cpdef getText():
+
+    l = []
+
+    cdef unsigned int j = c_ubyte(_getChar()).value
+    while j:
+        l.insert(0, chr(j))
+        j = _getChar()
+
+    return "".join(l[::-1])
 
 
 cpdef mousePressed(int button):

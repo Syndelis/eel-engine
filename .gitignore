@@ -7,4 +7,6 @@
 *.so
 eel.c
 figure.c
+shader.c
 *.txt
+*.png

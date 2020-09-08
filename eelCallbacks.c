@@ -35,6 +35,27 @@ void _keyRelease(int key) {
 
 }
 // -----------------------------------------------------------------------------
+// TEXT INPUT
+
+void charCallback(GLFWwindow *window, unsigned int codepoint) {
+
+    _input[_index] = codepoint;
+    _index = (_index + 1) % 256;
+
+}
+
+unsigned int _popChar() {
+
+    return _index ? _input[--_index] : 0;
+
+}
+
+int _charCount() {
+
+    return _index;
+
+}
+// -----------------------------------------------------------------------------
 // MOUSE INPUT
 
 void mouseCallback(GLFWwindow *window, int button, int action, int mods) {
