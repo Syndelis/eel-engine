@@ -38,7 +38,7 @@ Note that this document refers to [Eel Engine Version 1.0, released in August 14
     - [Shader module](#shader-module)
       - [Classes](#classes-2)
         - [Methods](#methods-9)
-[TOC]
+<!-- [TOC] -->
 
 ---
 ## Getting Started
@@ -188,7 +188,7 @@ def initializePlayer(eel):
     player = Knight()
 ```
 
-You might think this is not that useful, but there's a good reason for its existance. Some assets like `figure.Text`, `figure.Sprite` and `shader.Shader` **need** to be initialized only after a window has been opened. If you are interested in the why, that's because they need an OpenGL context to exist, and that only happens after the window is open.
+You might think this is not that useful, but there's a good reason for its existance. Some assets like `figure.Font`, `figure.Sprite` and `shader.Shader` **need** to be initialized only after a window has been opened. If you are interested in the why, that's because they need an OpenGL context to exist, and that only happens after the window is open.
 
 That makes the `load` decorator perfect for this kind of situation, since it will run only once and exactly after the window has ben opened.
 
