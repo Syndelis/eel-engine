@@ -3,6 +3,19 @@
 #include "eelCallbacks.h"
 #include <math.h>
 #include <stdio.h>
+#include <time.h>
+
+// -----------------------------------------------------------------------------
+// AUX
+
+double getTime() {
+    
+    struct timespec temp;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &temp);
+
+    return temp.tv_sec + (temp.tv_nsec / 1000000000.0);
+
+}
 
 // -----------------------------------------------------------------------------
 // KEYBOARD INPUT
@@ -60,16 +73,31 @@ int _charCount() {
 
 void mouseCallback(GLFWwindow *window, int button, int action, int mods) {
 
-    if (action)
+    if (action) {
         mouse_button |= 1 << button;
+        time_delta = getTime();
+    }
 
-    else mouse_button &= (~(1 << button));
+    else {
+        mouse_button &= (~(1 << button));
+        time_delta = getTime() - time_delta;
+    }
 
 }
 
 int _mousePressed(int button) {
 
     return mouse_button & (1 << button);
+
+}
+
+float _getMouseDelta() {
+
+    if (mouse_button)
+        return getTime() - time_delta;
+
+    else
+        return time_delta;
 
 }
 

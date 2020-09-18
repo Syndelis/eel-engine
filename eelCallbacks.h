@@ -25,8 +25,10 @@ int _charCount();
 // -----------------------------------------------------------------------------
 // MOUSE INPUT
 static short int mouse_button = 0;
+static double time_delta = 0.;
 void mouseCallback(GLFWwindow *window, int button, int action, int mods);
 int _mousePressed(int button);
 void _mouseRelease(int button);
+float _getMouseDelta();
 
 #endif
