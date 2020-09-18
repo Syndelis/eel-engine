@@ -35,35 +35,8 @@ ctypedef _Color Color
 """
 Functions
 """
-
 cdef float ux[4096]
 cdef float uy[4096]
-
-cpdef basicRec(int x, int y, int width, int height, Paintable eel):
-
-    cdef Polygon p
-    p.color = [0, 200, 0, 255]
-    p.point_size = 1.
-    p.mode = GL_POLYGON
-    p.texture = 0
-    p.used = 4
-    p.program = 0
-
-    l = [
-            (0, 0), (width, 0),
-            (width, height), (0, height)
-        ]
-
-    cdef int count = 0
-    for _x, _y in l:
-        ux[count] = (x + _x) * 1.0 / eel.width
-        uy[count] = (y + _y) * 1.0 / eel.height
-        count += 1
-
-    p.x = ux
-    p.y = uy
-
-    eel.render(&p)
 # ------------------------------------------------------------------------------
 """
 Buffer-less BaseFigure implementation
@@ -90,6 +63,8 @@ cdef class _BaseFigure:
         self.poly.color.g = g
         self.poly.color.b = b
         self.poly.color.a = a
+
+        return self
 
 
     cpdef setMode(self, int mode):
@@ -233,17 +208,9 @@ cdef class _BaseText(_BaseFigure):
         self.font = NULL
         if font:
             self.font = font.font
-            # self.poly.color = font.color
-
-        # if type(text) is not bytes: text = bytes(text, "utf-8")
-        # self.str = <char *> malloc(sizeof(char) * strlen(text))
-        # strcpy(self.str, text)
 
         self.str = text if type(text) is bytes else bytes(text, "utf-8")
         self._strlen = len(self.str)
-
-    # def __dealloc__(self):
-        # free(self.str)
 
 
     cpdef drawTo(self, Paintable eel):
@@ -255,16 +222,16 @@ cdef class _BaseText(_BaseFigure):
         width = eel.width * 1.
         height = eel.height * 1.
 
-        fx = self.x / width
+        fx = self.x / height
         fy = self.y / height
 
         for i in range(0, self._strlen):
             ch = self.font + <char>self.str[i]
 
-            xpos = fx + ch.bear.x / width
+            xpos = fx + ch.bear.x / height
             ypos = fy + (ch.size.y - ch.bear.y) / height
 
-            ux[0] = ux[1] = xpos + ch.size.x / width
+            ux[0] = ux[1] = xpos + ch.size.x / height
             ux[2] = ux[3] = xpos
 
             uy[0] = uy[3] = ypos
@@ -275,7 +242,7 @@ cdef class _BaseText(_BaseFigure):
             self.poly.texture = ch.TextureID
 
             eel.render(&self.poly)
-            fx += (ch.advance >> 6) / width
+            fx += (ch.advance >> 6) / height
 
             i += 1
 
@@ -287,10 +254,6 @@ cdef class _BaseText(_BaseFigure):
     cpdef setText(self, text):
         self.str = text
         self._strlen = len(text)
-        # if type(text) is not bytes: text = bytes(text, "utf-8")
-        # free(self.str)
-        # self.str = <char *> malloc(sizeof(char) * strlen(text))
-        # strcpy(self.str, text)
 
 
     cpdef getWidth(self):
@@ -299,14 +262,9 @@ cdef class _BaseText(_BaseFigure):
         cdef int i = 0
         cdef Character *ch
 
-        cdef int ln = strlen(self.str)
-
-        # for i in range(0, ln):
-        while (self.str[i]):
+        for i in range(0, self._strlen):
             ch = self.font + <char>self.str[i]
             x += (ch.advance >> 6)
-
-            i += 1
 
         return x
 
@@ -317,16 +275,23 @@ cdef class _BaseText(_BaseFigure):
         cdef int i = 0
         cdef Character *ch
 
-        cdef int ln = strlen(self.str)
-
-        # for i in range(0, ln):
-        while (self.str[i]):
+        for i in range(0, self._strlen):
             ch = self.font + <char>self.str[i]
             y = max(y, ch.size.y)
 
-            i += 1
-
         return y
+
+
+    def getBearing(self):
+        cdef int b = 0
+        cdef int i = 0
+        cdef Character *ch
+
+        for i in range(0, self._strlen):
+            ch = self.font + <char>self.str[i]
+            b = max(b, ch.bear.y)
+
+        return b
 
 
     cpdef setFont(self, _BaseFont font):
@@ -336,6 +301,7 @@ cdef class _BaseText(_BaseFigure):
     text = property(getText, setText)
     width = property(getWidth)
     height = property(getHeight)
+    bearing = property(getBearing)
 
 
 class Text(_BaseText, _BaseFigure):

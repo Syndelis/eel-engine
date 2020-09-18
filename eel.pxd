@@ -16,6 +16,9 @@ from glew cimport glewInit, glBindFramebuffer, glFramebufferTexture, glDrawBuffe
 from glfw3 cimport *
 from gl cimport *
 from SOIL cimport *
+
+# Python STDlib
+from enum import Enum
 # ------------------------------------------------------------------------------
 """
 Data Structures
@@ -27,6 +30,13 @@ ctypedef _Point Point
 ctypedef _Polygon Polygon
 ctypedef _key Key
 ctypedef _Color Color
+# ------------------------------------------------------------------------------
+"""
+Auxiliary
+"""
+# cdef class CursorValue:
+#     cdef GLFWcursor *cursor
+#     cdef GLFWcursor *get(self)
 # ------------------------------------------------------------------------------
 """
 Classes
@@ -63,6 +73,7 @@ cdef class Canvas(Paintable):
     cpdef getPos(self)
     cpdef setPos(self, pos)
 
+
 cdef class Eel(Paintable):
 
     # Drawing
@@ -77,6 +88,8 @@ cdef class Eel(Paintable):
     cdef public object name
     cdef public object deco_draw
     cdef public object deco_load
+
+    cdef public object _cursor
 
     # Technical
     cdef byte frame_read
@@ -112,6 +125,11 @@ cdef class Eel(Paintable):
 
     cpdef getOpacity(self)
     cpdef setOpacity(self, float op)
+
+    # cpdef toggleTransparency(self)
+
+    cpdef getCursor(self)
+    cpdef setCursor(self, cursor_enum)
 # ------------------------------------------------------------------------------
 """
 Functions
@@ -121,3 +139,5 @@ cpdef keyRelease(key)
 cdef char _getChar()
 cpdef getText()
 cpdef mousePressed(int button)
+cpdef mouseRelease(int button)
+cpdef mouseGetTimeHeld()

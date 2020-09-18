@@ -19,6 +19,7 @@ from SOIL cimport *
 
 # Python STDLIB
 from ctypes import c_ubyte
+from enum import Enum
 # ------------------------------------------------------------------------------
 """
 Data Structuresa
@@ -47,6 +48,39 @@ xcoord[2] = xcoord[3] = ycoord[1] = ycoord[2] = 0
 
 # ------------------------------------------------------------------------------
 __version__ = 1.2
+# ------------------------------------------------------------------------------
+"""
+Auxiliary
+"""
+
+cdef class CursorObject:
+
+    cdef GLFWcursor *cursor
+    cdef int code
+
+    def __cinit__(self, value, *args, **kwargs):
+        self.cursor = NULL
+        self.code = value
+
+
+    def __dealloc__(self):
+        if self.cursor: glfwDestroyCursor(self.cursor)
+
+
+    cpdef _set(self, Eel window):
+
+        if not self.cursor:
+            self.cursor = glfwCreateStandardCursor(self.code)
+
+        glfwSetCursor(window.window, self.cursor)
+
+
+class Cursor(CursorObject, Enum):
+
+    ARROW=GLFW_ARROW_CURSOR
+    HAND=GLFW_HAND_CURSOR
+    HRESIZE=GLFW_HRESIZE_CURSOR
+    VRESIZE=GLFW_VRESIZE_CURSOR
 # ------------------------------------------------------------------------------
 """
 Eel's Paintable Superclass
@@ -225,7 +259,7 @@ cdef class Eel(Paintable):
 
     def __cinit__(
         self, name="Eel Engine", width=640, height=480, x=-1, y=-1,
-        vsync=True, fullscreen=False
+        vsync=True, fullscreen=False, transparent=False
     ):
         
         global glfw_initialized
@@ -254,10 +288,16 @@ cdef class Eel(Paintable):
         self._fps = 0
         self.vsync = vsync
 
+        self._cursor = None
+
         if (not glfw_initialized):
             glfw_initialized = 1
             if (not glfwInit()):
                 raise Exception("GLFW could not be initialized")
+
+        if transparent:
+            self.clear_color.a = 0
+            glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE)
 
 
     def __dealloc__(self):
@@ -342,6 +382,14 @@ cdef class Eel(Paintable):
         """
 
         self.point_size = size
+
+
+    def bind(self, func):
+        """
+        Equivalent as Eel.draw
+        """
+
+        self.draw(func)
 
 
     def draw(self, func):
@@ -514,6 +562,25 @@ cdef class Eel(Paintable):
         glfwSetWindowOpacity(self.window, min(max(0., op), 1.))
 
 
+    # Doesn't work
+    # cpdef toggleTransparency(self):
+    #     glfwSetWindowAttrib(
+    #         self.window,
+    #         GLFW_TRANSPARENT_FRAMEBUFFER,
+    #         not glfwGetWindowAttrib(self.window, GLFW_TRANSPARENT_FRAMEBUFFER)
+    #     )
+
+
+    cpdef getCursor(self):
+        return self._cursor
+
+
+    cpdef setCursor(self, cursor_enum: Cursor):
+
+        cursor_enum.value._set(self)
+        self._cursor = cursor_enum
+
+
     # TODO:
     # setFps: Locks fps
     # setDimensions: redimension window
@@ -523,6 +590,8 @@ cdef class Eel(Paintable):
     height = property(getHeight, setHeight)
     mouse = property(getMouse, setMouse)
     opacity = property(getOpacity, setOpacity)
+    cursor = property(getCursor, setCursor)
+
 # ------------------------------------------------------------------------------
 """
 Functions
@@ -591,3 +660,8 @@ cpdef mouseRelease(int button):
     Virtually releases the mouse button
     """
     _mouseRelease(button)
+
+
+cpdef mouseGetTimeHeld():
+
+    return _getMouseDelta()

@@ -30,6 +30,14 @@ setup(
             library_dirs=["."],
             include_dirs=["."],
             extra_compile_args=['-Wno-unused-variable', '-Wno-discarded-qualifiers']
+        ),
+        Extension(
+            "gui",
+            ["gui.pyx"],
+            libraries=['GL'],
+            library_dirs=["."],
+            include_dirs=["."],
+            extra_compile_args=['-Wno-unused-variable']
         )
     ])
 )

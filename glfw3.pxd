@@ -21,6 +21,11 @@ cdef extern from "<GLFW/glfw3.h>":
     int GLFW_TRUE
     int GLW_FALSE
 
+    int GLFW_ARROW_CURSOR
+    int GLFW_HAND_CURSOR
+    int GLFW_HRESIZE_CURSOR
+    int GLFW_VRESIZE_CURSOR
+
     ctypedef unsigned int GLenum
 
     ctypedef unsigned char GLboolean
