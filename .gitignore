@@ -5,6 +5,7 @@
 
 # Ignore possibly built binaries/C source
 *.so
+*.o
 eel.c
 figure.c
 shader.c
