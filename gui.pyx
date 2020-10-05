@@ -159,6 +159,11 @@ cdef class Window(Widget):
         cdef float width, height
         width, height = target.width * 1.0, target.height * 1.0
 
+        self.poly.x = ux
+        self.poly.y = uy
+        self.poly.mode = GL_POLYGON
+        self.poly.color = self.drawColor()
+
         if not self.minimized:
             # Clear Window
             # ------------------------------------------------------------------
@@ -167,9 +172,6 @@ cdef class Window(Widget):
             ux[2], uy[2] = (self.width + self.x)*1.0 / height, (self.y + self.height)*1.0 / height
             ux[3], uy[3] = (self.width + self.x)*1.0 / height, (self.y              )*1.0 / height
 
-            self.poly.x = ux
-            self.poly.y = uy
-            self.poly.mode = GL_POLYGON
             self.poly.color = self.bg
 
             target.render(&self.poly)
@@ -307,6 +309,16 @@ cdef class Window(Widget):
 
     cpdef sendKeyInput(self, text, enter=False, tab=False, backspace=False):
         pass
+
+
+    cpdef move(self, x, y):
+        self.x, self.y = x, y
+        self.title.x = x + TEXTSHIFT
+        self.title.y = y + self.title.bearing + TEXTSHIFT / 2
+
+
+    cpdef getHeaderHeight(self):
+        return self.headerheight
 
 
 cdef class Button(Widget):
