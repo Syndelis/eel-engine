@@ -1,23 +1,22 @@
-all: libeelShader.a libeelText.a libeelCallbacks.a eelEngine
+CC=gcc
+SRC=eelCallbacks.c eelText.c eelShader.c
+OBJ=$(SRC:.c=.o)
+LIB=$(addprefix lib,$(OBJ:.o=.a))
+
+all: $(LIB) eelEngine
 
 eelEngine: eel.pyx setup.py
 	# python3 setup.py build --build-lib .
 	python3 setup.py build_ext --inplace
 
-libeelCallbacks.a: eelCallbacks.o
+$(LIB): lib%.a: %.o
 	ar rcs $@ $^
 
 eelCallbacks.o: eelCallbacks.c eelCallbacks.h
 	gcc -c $< -lglfw -lm
 
-libeelText.a: eelText.o
-	ar rcs $@ $^
-
 eelText.o: eelText.c eelText.h
 	gcc -c $< -lfreetype -I/usr/include/freetype2
-
-libeelShader.a: eelShader.o
-	ar rcs $@ $^
 
 eelShader.o: eelShader.c eelShader.h
 	gcc -c $< -lGL -lGLEW -Wno-discarded-qualifiers

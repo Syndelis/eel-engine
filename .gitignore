@@ -2,6 +2,7 @@
 /.vscode/
 /build/
 /__pycache__/
+/TEST/
 
 # Ignore possibly built binaries/C source
 *.so
