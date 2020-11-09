@@ -27,6 +27,13 @@ eelShader.o: eelShader.c eelShader.h
 	# Misses some stuff ^
 	#autopxd /usr/include/GL/gl.h gl.pxd -I /usr/include
 
+install:
+	mkdir ./LIBTEMP
+	echo "from .eel import *\nfrom . import figure, shader, gui" > ./LIBTEMP/__init__.py
+	cp *.so ./LIBTEMP
+	mv ./LIBTEMP ~/.local/lib/python3.8/site-packages/eelengine
+	rm -rf ./LIBTEMP
+
 clean:
 	rm *.o *.a *.so
 	rm eel.c figure.c shader.c
