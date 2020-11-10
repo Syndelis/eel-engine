@@ -2,11 +2,13 @@
 #define EELCALLBACKS_H
 
 #include <GLFW/glfw3.h>
+#include <stdint.h>
 
 // -----------------------------------------------------------------------------
 // KEYBOARD INPUT
 // One for each ASCII-key
-static unsigned long long int key_pressed = 0;
+// static unsigned long long int key_pressed = 0;
+static __uint128_t key_pressed = 0; // MAY NOT BE PORTABLE FOR WINDOWS/MACOS
 // static struct _key keybuffer[255];
 // static char keycount = 0;
 

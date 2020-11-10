@@ -20,14 +20,17 @@ double getTime() {
 // -----------------------------------------------------------------------------
 // KEYBOARD INPUT
 
+// ESC=256
+// BACKSPACE=259
+
 void keyCallback(GLFWwindow *window, int key, int scan, int action, int mods) {
 
     // Toggles the bit corresponding to the key pressed's ASCII code
 
     if (action)
-        key_pressed |= 1ULL << key;
+        key_pressed |= ((__uint128_t)1ULL) << key;
 
-    else key_pressed &= (~(1ULL << key));
+    else key_pressed &= (~(((__uint128_t)1ULL) << key));
 
     // Not using keybuffer right now due to it exploding
     // keybuffer[keycount].key = key;
@@ -38,13 +41,13 @@ void keyCallback(GLFWwindow *window, int key, int scan, int action, int mods) {
 
 int _keyPressed(int key) {
 
-    return (key_pressed & (1ULL << key)) > 0ULL;
+    return (key_pressed & (((__uint128_t)1ULL) << key)) > 0ULL;
 
 }
 
 void _keyRelease(int key) {
 
-    key_pressed &= (~(1ULL << key));
+    key_pressed &= (~(((__uint128_t)1ULL) << key));
 
 }
 // -----------------------------------------------------------------------------
