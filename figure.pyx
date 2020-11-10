@@ -67,6 +67,13 @@ cdef class _BaseFigure:
         return self
 
 
+    cpdef getColor(self):
+        return {
+            'r': self.poly.color.r, 'g': self.poly.color.g,
+            'b': self.poly.color.b, 'a': self.poly.color.a,
+        }
+
+
     cpdef setMode(self, int mode):
         self.poly.mode = mode
 
@@ -226,23 +233,29 @@ cdef class _BaseText(_BaseFigure):
         fy = self.y / height
 
         for i in range(0, self._strlen):
-            ch = self.font + <char>self.str[i]
+            ch = self.font + <int>self.str[i]
 
-            xpos = fx + ch.bear.x / height
-            ypos = fy + (ch.size.y - ch.bear.y) / height
+            if (<int>self.str[i] == <int>'\n'):
+                fx = self.x / height
+                fy += (ch.size.y + ch.bear.y) / height
 
-            ux[0] = ux[1] = xpos + ch.size.x / height
-            ux[2] = ux[3] = xpos
+            else:
 
-            uy[0] = uy[3] = ypos
-            uy[1] = uy[2] = ypos - ch.size.y / height
+                xpos = fx + ch.bear.x / height
+                ypos = fy + (ch.size.y - ch.bear.y) / height
 
-            self.poly.x = ux
-            self.poly.y = uy
-            self.poly.texture = ch.TextureID
+                ux[0] = ux[1] = xpos + ch.size.x / height
+                ux[2] = ux[3] = xpos
 
-            eel.render(&self.poly)
-            fx += (ch.advance >> 6) / height
+                uy[0] = uy[3] = ypos
+                uy[1] = uy[2] = ypos - ch.size.y / height
+
+                self.poly.x = ux
+                self.poly.y = uy
+                self.poly.texture = ch.TextureID
+
+                eel.render(&self.poly)
+                fx += (ch.advance >> 6) / height
 
             i += 1
 
@@ -252,7 +265,7 @@ cdef class _BaseText(_BaseFigure):
 
 
     cpdef setText(self, text):
-        self.str = text
+        self.str = text if type(text) is bytes else bytes(text, "utf-8")
         self._strlen = len(text)
 
 
@@ -261,12 +274,19 @@ cdef class _BaseText(_BaseFigure):
         cdef int x = 0
         cdef int i = 0
         cdef Character *ch
+        
+        cdef int max_x = 0
 
         for i in range(0, self._strlen):
-            ch = self.font + <char>self.str[i]
+            ch = self.font + <int>self.str[i]
+
+            if (<int>self.str[i] == <int>'\n'):
+                max_x = max(x, max_x)
+                x = 0
+
             x += (ch.advance >> 6)
 
-        return x
+        return max(x, max_x)
 
 
     cpdef getHeight(self):
@@ -276,8 +296,12 @@ cdef class _BaseText(_BaseFigure):
         cdef Character *ch
 
         for i in range(0, self._strlen):
-            ch = self.font + <char>self.str[i]
-            y = max(y, ch.size.y)
+            ch = self.font + <int>self.str[i]
+
+            if (<int>self.str[i] == <int>'\n'):
+                y += ch.size.y
+
+            else: y = max(y, ch.size.y)
 
         return y
 
