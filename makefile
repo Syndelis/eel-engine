@@ -21,12 +21,15 @@ eelText.o: %.o: %.c
 eelShader.o: %.o: %.c
 	$(CC) -c $< -lGL -lGLEW -Wno-discarded-qualifiers
 
-install:
+install: cleaninstall
 	mkdir ./LIBTEMP
 	echo "from .eel import *\nfrom . import figure, shader, gui" > ./LIBTEMP/__init__.py
 	cp *.so ./LIBTEMP
 	mv ./LIBTEMP ~/.local/lib/python3.8/site-packages/eelengine
 	rm -rf ./LIBTEMP
+
+cleaninstall:
+	rm -rf ~/.local/lib/python3.8/site-packages/eelengine
 
 clean:
 	rm *.o *.a *.so

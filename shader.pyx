@@ -34,6 +34,7 @@ cdef class _Shader:
 
     def __enter__(self):
         self.use()
+        return self
 
 
     def __exit__(self, *err):
