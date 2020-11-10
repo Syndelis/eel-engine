@@ -7,8 +7,10 @@
 # Ignore possibly built binaries/C source
 *.so
 *.o
+*.a
 eel.c
 figure.c
 shader.c
+gui.c
 *.txt
 *.png

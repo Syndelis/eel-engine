@@ -12,19 +12,14 @@ eelEngine: eel.pyx setup.py
 $(LIB): lib%.a: %.o
 	ar rcs $@ $^
 
-eelCallbacks.o: eelCallbacks.c eelCallbacks.h
-	gcc -c $< -lglfw -lm
+eelCallbacks.o: %.o: %.c
+	$(CC) -c $< -lglfw -lm
 
-eelText.o: eelText.c eelText.h
-	gcc -c $< -lfreetype -I/usr/include/freetype2
+eelText.o: %.o: %.c
+	$(CC) -c $< -lfreetype -I/usr/include/freetype2
 
-eelShader.o: eelShader.c eelShader.h
-	gcc -c $< -lGL -lGLEW -Wno-discarded-qualifiers
-
-# pxd:
-	# autopxd /usr/include/GLFW/glfw3.h glfw3.pxd -I /usr/include
-	# Misses some stuff ^
-	#autopxd /usr/include/GL/gl.h gl.pxd -I /usr/include
+eelShader.o: %.o: %.c
+	$(CC) -c $< -lGL -lGLEW -Wno-discarded-qualifiers
 
 install:
 	mkdir ./LIBTEMP
@@ -36,3 +31,8 @@ install:
 clean:
 	rm *.o *.a *.so
 	rm eel.c figure.c shader.c
+
+# pxd:
+	# autopxd /usr/include/GLFW/glfw3.h glfw3.pxd -I /usr/include
+	# Misses some stuff ^
+	#autopxd /usr/include/GL/gl.h gl.pxd -I /usr/include
