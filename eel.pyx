@@ -269,8 +269,8 @@ cdef class Eel(Paintable):
         self.name = bytes(name, "utf8")
         self._width = width
         self._height = height
-        self.x = x
-        self.y = y
+        self._x = x
+        self._y = y
         self.fullscreen = fullscreen
 
         # Drawing related
@@ -581,6 +581,37 @@ cdef class Eel(Paintable):
         self._cursor = cursor_enum
 
 
+    cpdef getX(self):
+        glfwGetWindowPos(self.window, &self._x, &self._y)
+        return self._x
+
+
+    cpdef setX(self, int x):
+        self._x = x
+        glfwSetWindowPos(self.window, self._x, self._y)
+        
+
+    cpdef getY(self):
+        glfwGetWindowPos(self.window, &self._x, &self._y)
+        return self._y
+
+
+    cpdef setY(self, int y):
+        self._y = y
+        glfwSetWindowPos(self.window, self._x, self._y)
+        
+
+    cpdef getPos(self):
+        glfwGetWindowPos(self.window, &self._x, &self._y)
+        return (self._x, self._y)
+
+
+    cpdef setPos(self, pos):
+        self._x, self._y = pos
+        glfwSetWindowPos(self.window, self._x, self._y)
+
+
+
     # TODO:
     # setFps: Locks fps
     # setDimensions: redimension window
@@ -591,6 +622,9 @@ cdef class Eel(Paintable):
     mouse = property(getMouse, setMouse)
     opacity = property(getOpacity, setOpacity)
     cursor = property(getCursor, setCursor)
+    x = property(getX, setX)
+    y = property(getY, setY)
+    pos = property(getPos, setPos)
 
 # ------------------------------------------------------------------------------
 """

@@ -33,7 +33,7 @@ cleaninstall:
 
 clean:
 	rm *.o *.a *.so
-	rm eel.c figure.c shader.c
+	rm eel.c figure.c shader.c gui.c
 
 # pxd:
 	# autopxd /usr/include/GLFW/glfw3.h glfw3.pxd -I /usr/include

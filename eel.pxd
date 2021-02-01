@@ -83,7 +83,7 @@ cdef class Eel(Paintable):
     # Window
     cdef GLFWwindow *window
     cdef int window_id, window_open
-    cdef int x, y
+    cdef int _x, _y
     cdef byte fullscreen
     cdef public object name
     cdef public object deco_draw
@@ -130,6 +130,15 @@ cdef class Eel(Paintable):
 
     cpdef getCursor(self)
     cpdef setCursor(self, cursor_enum)
+
+    cpdef getX(self)
+    cpdef setX(self, int x)
+
+    cpdef getY(self)
+    cpdef setY(self, int y)
+
+    cpdef getPos(self)
+    cpdef setPos(self, pos)
 # ------------------------------------------------------------------------------
 """
 Functions

@@ -1,0 +1,21 @@
+Vectors everywhere
+    3D
+    GLSL-like member accessing (e.g. vec.xy, vec.xz, vec.rba, ..)
+    Unpacking (.asColor(), .asCoordinates())
+    @ operator for vector product
+    * operator for dot product
+
+Better Collision System
+    Lots of heuristics before the real stuff kicks in
+
+3D Support
+    Cameras (Perspectives)
+        with camera: ...
+
+Text from stream (function(args) -> str)
+    The text will only read the stream inbetween draw calls
+    Perfect match for `getText()`
+    Stream from file (?)
+
+Misc
+    Eel.setFPS -> Locks FPS
