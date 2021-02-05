@@ -17,5 +17,9 @@ Text from stream (function(args) -> str)
     Perfect match for `getText()`
     Stream from file (?)
 
+Better sprite Support
+    The current one is really bad
+    Animated sprites, etc.
+
 Misc
     Eel.setFPS -> Locks FPS

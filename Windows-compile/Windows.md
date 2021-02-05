@@ -4,46 +4,105 @@ Here I will be listing the changes I've found out are necessary to have it compi
 Download the [Eel repository](https://github.com/syndelis/eel-engine)
 
 ### Compiling libraries
-Before installing any, make sure to have installed [MinGW-w64](https://sourceforge.net/projects/mingw-w64/files/mingw-w64/) (Don't try the Online installer, it doesn't work) and [Cmake](https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-win64-x64.msi). Don't forget to include all of the installed binaries in the PATH (`C:\mingw64\bin`, `C:\mingw64\x86_64-w64-mingw32\bin`).
+Before installing any, make sure to have installed [MinGW-w64](https://sourceforge.net/projects/mingw-w64/files/mingw-w64/) (Don't try the Online installer, it doesn't work). Personally I've downloaded the Win32-SEH version, but maybe Win32-SJLJ could fix any problems you might encounter.
+
+You'll also need [Cmake](https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-win64-x64.msi). When asked if you want to include it in PATH, choose yes.
+
+Don't forget to include all of the installed binaries in the PATH (`C:\mingw64\bin`, `C:\mingw64\x86_64-w64-mingw32\bin`) as well as `INCLUDE` and `LIB`.
 
 ---
 #### GLFW3
 Download [GLFW 3.32 WIN64](https://github.com/glfw/glfw/releases/download/3.3.2/glfw-3.3.2.bin.WIN64.zip) and extract.
 
-Drag `glfw-3.3.2.bin.WIN64/include/GLFW` to `C:\mingw64\x86_64-w64-mingw32\include` and drag the contents of `glfw-3.3.2.bin.WIN64/lib-mingw-w64` to `C:\mingw64\x86_64-w64-mingw32\lib`
+Copy the `glfw-3.3.2.bin.WIN64/include/GLFW` folder to `INCLUDE` and copy the contents of `glfw-3.3.2.bin.WIN64/lib-mingw-w64` to `LIB`
 
-After dragging the files, make sure to rename `libglfw3dll.a` to `libglfw3.dll.a`
+After it, make sure to rename `libglfw3dll.a` to `libglfw3.dll.a`
+
+That's how your file directory should look:
+
+```
+C:\mingw64\ AND
+C:\mingw64\x86_64-w64-mingw32\
+├── include\
+┊   └── GLFW\
+┊       ├── glfw3.h
+┊       └── glfw3native.h
+└── lib\
+    ├── glfw3.dll
+    ├── libglfw3.a
+    └── libglfw3.dll.a
+```
 
 ---
 #### GLEW
 Download [GLEW 2.1.0](https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip/download), extract and use the following commands:
 ```sh
+cd build/cmake
+
 cmake -G "MinGW Makefiles" -S . -B . -DCMAKE_INSTALL_PREFIX=C:\mingw64\x86_64-w64-mingw32
 
 mingw32-make all
-
 mingw32-make install
 ```
-Check to see where the `glew32.dll` file was saved to. If it was `C:\mingw64\x86_64-w64-mingw32\bin`, drag it to `C:\mingw64\x86_64-w64-mingw32\lib`
+Check to see where the `glew32.dll` file was saved to. If it was `C:\mingw64\x86_64-w64-mingw32\bin`, drag it to `LIB`
+
+That's how your file directory should look:
+
+```
+C:\mingw64\ AND
+C:\mingw64\x86_64-w64-mingw32\
+├── include\
+┊   └── GL\
+┊       └── glew.h
+└── lib\
+    └── glew32.dll
+```
 
 ---
 #### SOIL
 Download [SOIL](http://web.archive.org/web/20200104042737/http://www.lonesock.net/files/soil.zip), extract and use the following commands:
 ```sh
-cmake -G "MinGW Makefiles" -S . -B . -DCMAKE_INSTALL_PREFIX=C:\mingw64\x86_64-w64-mingw32
+cd projects/makefile
+mkdir obj
 
 mingw32-make all
 ```
 
-Now drag `SOIL/src/SOIL.h` to `C:\mingw64\x86_64-w64-mingw32\include\SOIL` and `libSOIL.a` to `C:\mingw64\x86_64-w64-mingw32\lib\`
+Now make a `SOIL` folder in `INCLUDE` and copy `SOIL/src/SOIL.h` there. Also copy `libSOIL.a` to `LIB`
+
+That's how your file directory should look:
+
+```
+C:\mingw64\ AND
+C:\mingw64\x86_64-w64-mingw32\
+├── include\
+┊   └── SOIL\
+┊       └── SOIL.h
+└── lib\
+    └── libSOIL.a
+```
 
 ---
 #### FreeType 2
-Download [FreeType](https://github.com/ubawurinna/freetype-windows-binaries).
+Download [FreeType](https://github.com/ubawurinna/freetype-windows-binaries) and extract it.
 
-For the lib drag `freetype/win64/freetype.dll` to `C:\mingw64\x86_64-w64-mingw32\lib\`
+For the lib drag `freetype/win64/freetype.dll` to `LIB`
 
-Now for the include, drag `freetype/include/freetype` to `C:\mingw64\x86_64-w64-mingw32\include\freetype2` and drag `freetype/include/ft2build.h` to `C:\mingw64\x86_64-w64-mingw32\include`
+Now for the include, you'll want to create a new folder called `freetype2` in `INCLUDE` and copy the whole `freetype/include/freetype` folder to it. You'll also want to copy that folder and paste it directly at `INCLUDE`, as well as the file `freetype/include/ft2build.h`.
+
+That was a lot. Now that's how your file directory should look:
+
+```
+C:\mingw64\ AND
+C:\mingw64\x86_64-w64-mingw32\
+├── include\
+┊   ├── freetype2\
+┊   ┊   ├── \freetype\
+┊   ├── \freetype\
+┊   └── ft2build.h
+└── lib\
+    └── freetype.dll
+```
 
 ---
 ### Python Installation
