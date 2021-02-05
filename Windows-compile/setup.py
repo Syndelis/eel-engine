@@ -34,6 +34,14 @@ setup(
             include_dirs=[".", r"C:\mingw64\x86_64-w64-mingw32\include", r"C:\mingw64\x86_64-w64-mingw32"],
             extra_link_args="-static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive".split()
             #extra_compile_args=['-Wno-unused-variable', '-Wno-discarded-qualifiers']
+        ),
+        Extension(
+            "gui",
+            ["gui.pyx"],
+            libraries=['opengl32'],
+            library_dirs=[".", r"C:\mingw64\x86_64-w64-mingw32\lib", r"C:\mingw64\x86_64-w64-mingw32"],
+            include_dirs=[".", r"C:\mingw64\x86_64-w64-mingw32\include", r"C:\mingw64\x86_64-w64-mingw32"],
+            extra_link_args="-static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive".split()
         )
     ])
 )
