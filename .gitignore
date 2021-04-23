@@ -14,3 +14,8 @@ shader.c
 gui.c
 *.txt
 *.png
+
+# Ignore Premake output
+/obj/
+*.make
+Makefile

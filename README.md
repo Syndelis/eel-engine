@@ -11,7 +11,11 @@ In order to compile it, you'll need to meet a few requirements:
 - [SOIL](http://www.lonesock.net/soil.html) >= 1.07 (on Linux: libsoil1 libsoil-dev)
 - [FreeType2](https://www.freetype.org/) (on Linux: libfreetype6 libfreetype6-dev)
 
-After meeting the requirements, Linux users can compile the engine simply by running `make`.
+After meeting the requirements, be sure to install [Premake5](https://premake.github.io/) and then run the following commands:
+```sh
+premake5 gmake
+make
+```
 
 Windows (64bit) users will have to follow the instructions listed in [here](Windows-compile/Windows.md).
 **Please note**, however, that compiled binaries for Windows are available [here](https://github.com/Syndelis/eel-engine/releases) and thus you should only compile if you want to tinker with the source code.
