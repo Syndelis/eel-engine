@@ -1,7 +1,15 @@
 -- Whole EelEngine Workspace: Acts as an umbrella for everything ---------------
 workspace "EelEngine"
-	configurations { "Library", "Executable" }
-	platforms { "Linux", "Win64" }
+
+	configurations "Library"
+
+	filter "system:linux"
+		configurations "Executable"
+
+	filter "system:windows"
+		configuration "Library"
+
+	filter {}
 
 -- C Libraries that are used in Cython modules ---------------------------------
 
@@ -13,14 +21,17 @@ for i, CLib in ipairs(eelCLibraries) do
 		kind "StaticLib"
 		files (CLib .. ".*")
 
-		links { "glfw", "m", "freetype", "GL", "GLEW" }
-		includedirs "/usr/include/freetype2"
+		filter "system:windows"
+			links { "glfw3", "m", "freetype", "opengl32", "GLEW32" }
+
+		filter "system:linux"
+			links { "glfw", "m", "freetype", "GL", "GLEW" }
+
+		filter {}
 
 		targetdir "."
-
-		cleancommands "rm lib%{prj.name}.so"
-
-		buildmessage "Compiling C Library %{prj.name}..."
+		optimize "On"
+		includedirs "/usr/include/freetype2"
 
 end
 
@@ -29,8 +40,15 @@ end
 project "Engine"
 	kind "Makefile"
 
-	buildcommands { "python3 setup.py build_ext --inplace" }
-	cleancommands { "rm *.cpython-*.so" }
+	filter "system:windows"
+		buildcommands { "python setup.py build_ext --inplace --compiler=mingw64 -DMS_WIN64" }
+		cleanextensions ".pyd"
+
+	filter "system:linux"
+		buildcommands { "python3 setup.py build_ext --inplace" }
+		cleanextensions ".so"
+
+	filter {}
 
 	buildmessage "Building the Engine"
 

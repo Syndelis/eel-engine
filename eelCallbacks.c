@@ -5,11 +5,16 @@
 #include <stdio.h>
 #include <time.h>
 
+// Windows ---------------------------------------------------------------------
+#ifndef CLOCK_MONOTONIC_RAW
+#define CLOCK_MONOTONIC_RAW CLOCK_MONOTONIC
+#endif
+
 // -----------------------------------------------------------------------------
 // AUX
 
 double getTime() {
-    
+
     struct timespec temp;
     clock_gettime(CLOCK_MONOTONIC_RAW, &temp);
 

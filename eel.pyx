@@ -5,11 +5,18 @@ Imports
 # Libc
 from libc.stdio cimport printf
 from libc.stdlib cimport malloc, free, rand, srand
-from libc.time cimport time
 from libc.math cimport pi, cos, sin
 
 # Posix
-from posix.time cimport clock_gettime, timespec, CLOCK_MONOTONIC_RAW
+from posix.time cimport clock_gettime, timespec
+
+IF UNAME_SYSNAME == "Windows":
+    from posix.time cimport CLOCK_MONOTONIC
+
+ELSE:
+    from libc.time cimport time
+    from posix.time cimport CLOCK_MONOTONIC_RAW
+
 
 # Graphics (GL + GLFW & SOIL)
 from glew cimport glewInit, glBindFramebuffer, glFramebufferTexture, glDrawBuffers, glCheckFramebufferStatus, glGenFramebuffers, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_COMPLETE
@@ -86,7 +93,7 @@ class Cursor(CursorObject, Enum):
 Eel's Paintable Superclass
 """
 cdef class Paintable:
-    
+
     cdef void render(self, Polygon *p):
 
         cdef int i
@@ -125,7 +132,7 @@ cdef class Paintable:
                 glVertex2f(p.x[i], p.y[i])
 
             glEnd()
-            
+
             if p.program: resetShader()
 # ------------------------------------------------------------------------------
 """
@@ -261,7 +268,7 @@ cdef class Eel(Paintable):
         self, name="Eel Engine", width=640, height=480, x=-1, y=-1,
         vsync=True, fullscreen=False, transparent=False
     ):
-        
+
         global glfw_initialized
 
         # Initialization related
@@ -349,7 +356,7 @@ cdef class Eel(Paintable):
         self.window_open = 1
         forceGlew()
 
-    
+
     cpdef setColor(self, int r, int g, int b, int a=255):
         """
         def setColor(self, r, g, b, a=255)
@@ -362,7 +369,7 @@ cdef class Eel(Paintable):
         self.draw_color.b = b
         self.draw_color.a = a
 
-    
+
     cpdef setClearColor(self, int r, int g, int b, int a=255):
         """
         def setClearColor(self, r, g, b, a=255)
@@ -412,14 +419,19 @@ cdef class Eel(Paintable):
     cpdef calculateFPS(self):
 
         cdef timespec temp
-        clock_gettime(CLOCK_MONOTONIC_RAW, &temp)
+
+        IF UNAME_SYSNAME == "Windows":
+            clock_gettime(CLOCK_MONOTONIC, &temp)
+
+        ELSE:
+            clock_gettime(CLOCK_MONOTONIC_RAW, &temp)
 
         if self.frame_read:
                 self._fps = 1.0 / (
                     temp.tv_sec - self.last_frame.tv_sec +\
                     (temp.tv_nsec - self.last_frame.tv_nsec) / 1000000000.0
                 )
-            
+
         else: self.frame_read = 1
         self.last_frame.tv_sec = temp.tv_sec
         self.last_frame.tv_nsec = temp.tv_nsec
@@ -471,7 +483,7 @@ cdef class Eel(Paintable):
                 glEnable(GL_BLEND)
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-                
+
             glBindTexture(GL_TEXTURE_2D, 0)
             glColor4f(
                 self.clear_color.r / 255.0, self.clear_color.g / 255.0,
@@ -502,7 +514,7 @@ cdef class Eel(Paintable):
         self.open()
         self.start()
 
-    
+
     cpdef getFps(self):
         return self._fps
 
@@ -589,7 +601,7 @@ cdef class Eel(Paintable):
     cpdef setX(self, int x):
         self._x = x
         glfwSetWindowPos(self.window, self._x, self._y)
-        
+
 
     cpdef getY(self):
         glfwGetWindowPos(self.window, &self._x, &self._y)
@@ -599,7 +611,7 @@ cdef class Eel(Paintable):
     cpdef setY(self, int y):
         self._y = y
         glfwSetWindowPos(self.window, self._x, self._y)
-        
+
 
     cpdef getPos(self):
         glfwGetWindowPos(self.window, &self._x, &self._y)
