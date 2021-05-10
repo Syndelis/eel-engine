@@ -41,7 +41,7 @@ else:
 
 SOIL            = ('SOIL',)
 FREETYPE        = ('freetype',)
-FREETYPE_PATH   = ('/usr/include/freetype2')
+FREETYPE_PATH   = ('/usr/include/freetype2',)
 
 
 setup(

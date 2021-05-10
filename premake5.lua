@@ -1,3 +1,5 @@
+-- ALL THIS HAS BEEN AUTOMATICALLY DONE BY SETUP.PY FOR AGES
+
 -- Whole EelEngine Workspace: Acts as an umbrella for everything ---------------
 workspace "EelEngine"
 
@@ -10,6 +12,7 @@ workspace "EelEngine"
 		configuration "Library"
 
 	filter {}
+	objdir "!obj"
 
 -- C Libraries that are used in Cython modules ---------------------------------
 
@@ -30,6 +33,8 @@ for i, CLib in ipairs(eelCLibraries) do
 		filter {}
 
 		targetdir "."
+		pic "On"
+
 		optimize "On"
 		includedirs "/usr/include/freetype2"
 
