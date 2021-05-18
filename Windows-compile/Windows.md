@@ -122,33 +122,6 @@ elif msc_ver == 'XXXX':
 ```
 
 ---
-### File changes
-#### `eelText.h`
-Add
-```c
-#ifndef GL_CLAMP_TO_EDGE
-#define GL_CLAMP_TO_EDGE 0x812F
-#endif
-```
-Anywhere in the file
-
-#### `Makefile`
-* Change all occurances of `rm` to `del`
-* Remove all commented lines (lines that begin with `#`)
-* Rename `python3` to `python`
-* Rename all instances of `-lGL` to `-lopengl32`
-* Rename all instances of `-lGLEW` to `-lGLEW32`
-* Rename all instances of `-lglfw` to `-lglfw3`
-* In `eelEngine`, add `--compiler=mingw64` at the end of the `python3` command
-
-#### `setup.py`
-Substitute the previous folder's [setup.py](../setup.py) with this folder's [setup.py](setup.py)
-
-#### `eel.pyx`
-Remove the `from libc.time cimport time` line.
-Change all occurances of `CLOCK_MONOTONIC_RAW` to `CLOCK_MONOTONIC`
-
----
 ### Distributing
 After the compilation, you will need to keep the following DLLs: `freetype.dll`, `glew32.dll`, `glfw3.dll` close to the `.pyd`'s.
 

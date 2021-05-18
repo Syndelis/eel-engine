@@ -13,7 +13,7 @@ In order to compile it, you'll need to meet a few requirements:
 
 After meeting the requirements, be sure to install [Premake5](https://premake.github.io/) and then run the following commands:
 ```sh
-premake5 gmake
+premake5 gmake2
 make
 ```
 
