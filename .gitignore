@@ -3,6 +3,7 @@
 /build/
 /__pycache__/
 /TEST/
+/ctest/
 
 # Ignore possibly built binaries/C source
 *.so
@@ -19,5 +20,6 @@ gui.c
 
 # Ignore Premake output
 /obj/
+/eelengine/
 *.make
 Makefile

@@ -1,9 +1,15 @@
-Vectors everywhere
-    3D
-    GLSL-like member accessing (e.g. vec.xy, vec.xz, vec.rba, ..)
-    Unpacking (.asColor(), .asCoordinates())
-    @ operator for vector product
-    * operator for dot product
+Figure submodule remaster
+    dataclasses
+    NumPy
+        https://cython.readthedocs.io/en/latest/src/userguide/numpy_tutorial.html#numpy-tutorial
+        Vectors everywhere
+            3D
+            GLSL-like member accessing (e.g. vec.xy, vec.xz, vec.rba, ..)
+            Unpacking (.asColor(), .asCoordinates())
+            @ operator for vector product
+            * operator for dot product
+
+    check ctest/
 
 Better Collision System
     Lots of heuristics before the real stuff kicks in
@@ -23,3 +29,8 @@ Better sprite Support
 
 Misc
     Eel.setFPS -> Locks FPS
+
+    Functions for drawing class-based figures
+        from inspect import signature
+        locals[...] = ...
+        keep one instance of that class buffered

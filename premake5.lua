@@ -50,8 +50,12 @@ project "Engine"
 		cleanextensions ".pyd"
 
 	filter "system:linux"
-		buildcommands { "python3 setup.py build_ext --inplace" }
-		cleanextensions ".so"
+		buildcommands {
+			"python3 setup.py build_ext -b eelengine",
+			'mkdir -p eelengine/figure && mv eelengine/figure.*.so eelengine/figure && echo "from .eel import *\\nfrom . import figure, shader, gui" > eelengine/__init__.py',
+			"cp figure.py eelengine/figure/__init__.py"
+		}
+		cleancommands { "rm -rf eelengine/*.so" }
 
 	filter {}
 
