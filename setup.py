@@ -15,8 +15,8 @@ if name == "posix":
     GLEW    = ('GLEW',)
 
     # PATHS ----------------------------
-    BASE_LIB    = ('.',)
-    BASE_INC    = ('.',)
+    BASE_LIB    = ('.', 'src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
+    BASE_INC    = ('.', 'src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
 
     # EXRTA ARGS -----------------------
     EXTRA_ARGS  = {'extra_compile_args': '-O2 -Wno-unused-variable -Wno-discarded-qualifiers'.split()}
@@ -46,10 +46,11 @@ FREETYPE_PATH   = ('/usr/include/freetype2',)
 
 setup(
     name='Eel Engine',
+    ext_package='eelengine',
     ext_modules=cythonize([
         Extension(
             "eel",
-            ["eel.pyx", "eelShader.c"],
+            ["src/eel/eel.pyx", "src/shader/eelShader.c"],
             libraries=[*SOIL, *BASE, *OPENGL, *GLFW, *GLEW, 'eelCallbacks', 'eelShader'],
             library_dirs=[*BASE_LIB],
             include_dirs=[*BASE_INC],
@@ -57,7 +58,7 @@ setup(
         ),
         Extension(
             "figure",
-            ["figure.pyx", "eelText.c"],
+            ["src/figure/figure.pyx", "src/figure/eelText.c"],
             libraries=[*SOIL, *OPENGL, *FREETYPE, 'eelText'],
             library_dirs=[*BASE_LIB, *FREETYPE_PATH],
             include_dirs=[*BASE_INC, *FREETYPE_PATH],
@@ -65,7 +66,7 @@ setup(
         ),
         Extension(
             "shader",
-            ["shader.pyx", "eelShader.c"],
+            ["src/shader/shader.pyx", "src/shader/eelShader.c"],
             libraries=[*OPENGL, *GLEW, 'eelShader'],
             library_dirs=[*BASE_LIB],
             include_dirs=[*BASE_INC],
@@ -73,11 +74,13 @@ setup(
         ),
         Extension(
             "gui",
-            ["gui.pyx"],
+            ["src/gui/gui.pyx"],
             libraries=[*OPENGL],
             library_dirs=[*BASE_LIB],
             include_dirs=[*BASE_INC],
             **EXTRA_ARGS
         )
-    ])
+    ],
+    include_path=[*BASE_INC]
+    )
 )

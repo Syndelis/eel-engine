@@ -16,13 +16,17 @@ workspace "EelEngine"
 
 -- C Libraries that are used in Cython modules ---------------------------------
 
-eelCLibraries = { "eelCallbacks", "eelText", "eelShader" }
+eelCLibraries = {
+	eelCallbacks="src/eel/eelCallbacks",
+	eelText="src/figure/eelText",
+	eelShader="src/shader/eelShader"
+}
 
-for i, CLib in ipairs(eelCLibraries) do
+for lib, libfiles in pairs(eelCLibraries) do
 
-	project (CLib)
+	project (lib)
 		kind "StaticLib"
-		files (CLib .. ".*")
+		files (libfiles .. ".*")
 
 		filter "system:windows"
 			links { "glfw3", "m", "freetype", "opengl32", "GLEW32" }
@@ -51,11 +55,19 @@ project "Engine"
 
 	filter "system:linux"
 		buildcommands {
-			"python3 setup.py build_ext -b eelengine",
-			'mkdir -p eelengine/figure && mv eelengine/figure.*.so eelengine/figure && echo "from .eel import *\\nfrom . import figure, shader, gui" > eelengine/__init__.py',
-			"cp figure.py eelengine/figure/__init__.py"
+			"python3 setup.py build_ext --inplace",
+			'echo "from .eel import *\\nfrom . import figure, shader, gui" > eelengine/__init__.py',
+			"mkdir -p eelengine/figure && mv eelengine/figure*so eelengine/figure",
+			"cp src/figure/figure.py eelengine/figure/__init__.py"
 		}
-		cleancommands { "rm -rf eelengine/*.so" }
+		cleancommands {
+			"rm -rf build obj eelengine"
+			"rm *.a *.make Makefile"
+			"rm src/eel/eel.c"
+			"rm src/figure/figure.c"
+			"rm src/gui/gui.c"
+			"rm src/shader/shader.c"
+		}
 
 	filter {}
 
