@@ -47,7 +47,7 @@ cdef class _BaseFigure:
     cdef Polygon poly
     cdef int texture_set
 
-    def __cinit__(self, x, y, **kwargs):
+    def __cinit__(self, x, y, *args, **kwargs):
 
         self.poly.color = [255, 255, 255, 255]
         self.poly.mode = GL_LINE_LOOP
@@ -412,7 +412,7 @@ cdef class _BaseFont:
 """
 Wrappers
 """
-
+"""
 class BaseFigure(_BaseFigure):
 
     @abstractmethod
@@ -433,6 +433,7 @@ class BaseFigure(_BaseFigure):
     pos = property(getPos, setPos)
 
 
+"""
 class Font(_BaseFont): pass
 # ------------------------------------------------------------------------------
 """
@@ -448,7 +449,7 @@ class NoPhysics:
 """
 Python Figures
 """
-
+"""
 class Rectangle(BaseFigure):
 
     def __init__(self, x, y, *, width, height, fill=False):
@@ -586,3 +587,4 @@ class Line(BaseFigure, NoPhysics):
     def layout(self):
         
         return [(0, 0), (self.xp - self.x, self.yp - self.y)]
+"""
