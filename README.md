@@ -23,12 +23,12 @@ Windows (64bit) users will have to follow the instructions listed in [here](Wind
 #### Usage
 To get started, you'll need to import the Eel class from the `eel` module and instantiate it.
 ```python
->>> from eel import Eel
+>>> from eelengine import Eel
 >>> window = Eel() # Initializes a new window (doesn't open it yet)
 ```
 With that done, you'll have a new window container ready to be open and drawn to. The next step is to actually draw something in it. In order to do that, we'll import a basic shape from the `figure` module and use it on the `draw()` method of our instantiated window.
 ```python
->>> from figure import Rectangle
+>>> from eelengine.figure import Rectangle
 >>> @window.draw
 >>> def drawCoolRectangle(eel):
 >>>     r = Rectangle(300, 200, width=50, height=100) # Creates a new rectangle object at (x, y) = (300, 200)
