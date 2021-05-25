@@ -123,15 +123,12 @@ elif msc_ver == 'XXXX':
 
 ---
 ### Distributing
-After the compilation, you will need to keep the following DLLs: `freetype.dll`, `glew32.dll`, `glfw3.dll` close to the `.pyd`'s.
+After the compilation, you will need to ""install"" the following DLLson your system: `freetype.dll`, `glew32.dll`, `glfw3.dll`.
 
-This means that, in order to have the engine working wherever, you'll always have 6 files in the directory:
-* `shader.cpXX-win_amd64.pyd`
-* `figure.cpXX-win_amd64.pyd`
-* `eel.cpXX-win_amd64.pyd`
-* `freetype.dll`
-* `glew32.dll`
-* `glfw3.dll`
+In order to do that, simply copy them to `C:\Windows\System32`. If you don't trust my bundled DLLs, make sure to download them
+from trusted sources.
+
+Make sure your software's users know they need to install them.
 
 ---
 I might have missed some details in the process that will be filled as I'm forced to compile new versions of the engine.
