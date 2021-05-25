@@ -10,8 +10,8 @@ ATTEMPTS = 4
 for i in range(ATTEMPTS):
 
     try:
-        from eel import Eel
-        from figure import BaseFigure, Circle
+        from eelengine import Eel
+        from eelengine.figure import BaseFigure, Circle
         break
 
     except ModuleNotFoundError:

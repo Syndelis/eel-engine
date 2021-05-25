@@ -9,8 +9,8 @@ ATTEMPTS = 4
 for i in range(ATTEMPTS):
 
     try:
-        from eel import Eel
-        from figure import Rectangle
+        from eelengine import Eel
+        from eelengine.figure import Rectangle
         break
 
     except ModuleNotFoundError:

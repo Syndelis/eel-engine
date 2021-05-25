@@ -10,9 +10,9 @@ ATTEMPTS = 4
 for i in range(ATTEMPTS):
 
     try:
-        from eel import Eel, keyPressed, Canvas
-        from figure import Rectangle, Line
-        from shader import Shader
+        from eelengine import Eel, keyPressed, Canvas
+        from eelengine.figure import Rectangle, Line
+        from eelengine.shader import Shader
         break
 
     except ModuleNotFoundError:

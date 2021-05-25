@@ -450,7 +450,7 @@ class NoPhysics:
 Python Figures
 """
 """
-class Rectangle(BaseFigure):
+class __Rectangle(_BaseFigure):
 
     def __init__(self, x, y, *, width, height, fill=False):
 
@@ -483,8 +483,9 @@ class Rectangle(BaseFigure):
     
     def collisionCenter(self):
         return (self.x+self.width/2, self.y+self.height/2)
+"""
 
-
+"""
 class Triangle(BaseFigure, NoPhysics):
 
     def __init__(self, x, y, *, radius, angle=0.0, fill=False):
@@ -548,9 +549,9 @@ class Circle(BaseFigure):
     
     def collisionCenter(self):
         return (self.x, self.y)
-
-
-class Sprite(Rectangle):
+"""
+"""
+class Sprite(__Rectangle):
     
     def __init__(self, x, y, *, width, height, img):
 
@@ -571,7 +572,8 @@ class Sprite(Rectangle):
 
         return [(w, -h), (w, h), (-w, h), (-w, -h)]
 
-
+"""
+"""
 class Line(BaseFigure, NoPhysics):
 
     def __init__(self, x, y, *, xp, yp):
