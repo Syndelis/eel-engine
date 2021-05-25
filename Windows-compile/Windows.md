@@ -10,6 +10,8 @@ You'll also need [Cmake](https://github.com/Kitware/CMake/releases/download/v3.1
 
 Don't forget to include all of the installed binaries in the PATH (`C:\mingw64\bin`, `C:\mingw64\x86_64-w64-mingw32\bin`) as well as `INCLUDE` and `LIB`.
 
+Also note that `make` becomes `mingw32-make`. Despite being called that, it's MinGW64's `make` command. Only god knows why they called it that.
+
 ---
 #### GLFW3
 Download [GLFW 3.32 WIN64](https://github.com/glfw/glfw/releases/download/3.3.2/glfw-3.3.2.bin.WIN64.zip) and extract.
