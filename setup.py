@@ -15,8 +15,8 @@ if name == "posix":
     GLEW    = ('GLEW',)
 
     # PATHS ----------------------------
-    BASE_LIB    = ('.', 'src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
-    BASE_INC    = ('.', 'src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
+    BASE_LIB    = ('.',)
+    BASE_INC    = ('.',)
 
     # EXRTA ARGS -----------------------
     EXTRA_ARGS  = {'extra_compile_args': '-O2 -Wno-unused-variable -Wno-discarded-qualifiers'.split()}
@@ -42,6 +42,9 @@ else:
 SOIL            = ('SOIL',)
 FREETYPE        = ('freetype',)
 FREETYPE_PATH   = ('/usr/include/freetype2',)
+
+BASE_LIB += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
+BASE_INC += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
 
 
 setup(

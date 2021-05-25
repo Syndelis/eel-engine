@@ -50,22 +50,27 @@ project "Engine"
 	kind "Makefile"
 
 	filter "system:windows"
-		buildcommands { "python setup.py build_ext --inplace --compiler=mingw64 -DMS_WIN64" }
+		buildcommands {
+			"python setup.py build_ext --inplace --compiler=mingw64 -DMS_WIN64",
+			"cp src/eel/eel.py eelengine/__init__.py",
+			"mkdir -p eelengine/figure && mv eelengine/figure*pyd eelengine/figure",
+			"cp src/figure/figure.py eelengine/figure/__init__.py"
+		}
 		cleanextensions ".pyd"
 
 	filter "system:linux"
 		buildcommands {
 			"python3 setup.py build_ext --inplace",
-			'echo "from .eel import *\\nfrom . import figure, shader, gui" > eelengine/__init__.py',
+			"cp src/eel/eel.py eelengine/__init__.py",
 			"mkdir -p eelengine/figure && mv eelengine/figure*so eelengine/figure",
 			"cp src/figure/figure.py eelengine/figure/__init__.py"
 		}
 		cleancommands {
-			"rm -rf build obj eelengine"
-			"rm *.a *.make Makefile"
-			"rm src/eel/eel.c"
-			"rm src/figure/figure.c"
-			"rm src/gui/gui.c"
+			"rm -rf build obj eelengine",
+			"rm *.a *.make Makefile",
+			"rm src/eel/eel.c",
+			"rm src/figure/figure.c",
+			"rm src/gui/gui.c",
 			"rm src/shader/shader.c"
 		}
 
