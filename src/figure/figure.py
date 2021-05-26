@@ -11,6 +11,51 @@ class BaseFigure(_BaseFigure):
 
     def __post_init__(self, fill=False):
         if fill: self.setMode(9)
+
+
+    def __init_subclass__(cls):
+        
+        def func():
+            
+            inst = None
+            annotations = []
+            for _cls in cls.__mro__[-1::-1]:
+                try: annotations.extend(_cls.__annotations__.keys())
+                except: pass
+
+
+            def inner(*args, target, **kwargs):
+                nonlocal inst, annotations
+
+                if inst is None: inst = cls(*args, **kwargs)
+
+                else:
+                    for arg, val in zip(annotations, args):
+                        inst.__setattr__(arg, val)
+
+                    for name, val in kwargs.items():
+                        inst.__setattr__(name, val)
+
+                inst.drawTo(target)
+
+                return inst
+
+
+            return inner
+
+        globals()[f'draw{cls.__name__}'] =\
+        globals()[f'draw{cls.__name__[:4]}'] = func()
+
+        print(f'Registered draw{cls.__name__}')
+
+
+    @property
+    def pos(self):
+        return (self.x, self.y)
+
+    @pos.setter
+    def pos(self, v):
+        self.x, self.y = v
         
 
 @dataclass
@@ -59,6 +104,8 @@ class Triangle(BaseFigure, NoPhysics):
     @angle.setter
     def angle(self, value: float):
         
+        if type(value) is property: value = 0
+
         self.__angle = value
 
         a = value + pi * 2/3

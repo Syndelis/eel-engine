@@ -1,6 +1,7 @@
 from math import sin, cos, pi
 from time import time
 from sys import path
+from dataclasses import dataclass
 
 # NOTE: This weird import down here only looks this way because the module
 #       is located at the root . directory, while this file is at ./examples.
@@ -11,28 +12,31 @@ for i in range(ATTEMPTS):
 
     try:
         from eelengine import Eel
-        from eelengine.figure import BaseFigure, Circle
+        import eelengine.figure as fig
         break
 
     except ModuleNotFoundError:
         path.insert(0, '..')
 
 
-class Gear(BaseFigure):
+@dataclass
+class Gear(fig.BaseFigure):
 
-    def __init__(self, x, y, *, inner_radius, outer_radius,
-                dents=6, angle=0,precision=1):
+    inner_radius: int
+    outer_radius: int
+    dents: int=6
+    angle: int=0
+    precision: int=1
 
-        self.x, self.y = x, y
-        self.inner_radius = inner_radius
-        self.outer_radius = outer_radius
-        self.dents = dents
-        self.angle = angle * pi / 180
+    def __post_init__(self):
+        self.used = round(
+            (self.inner_radius + self.outer_radius) / 2 *\
+            20 * self.precision
+        )
 
-        self.used = round((inner_radius + outer_radius)/2 * 20 * precision)
         self.dent_ratio = self.used // self.dents
-
     
+
     def layout(self):
 
         l = []
@@ -51,22 +55,15 @@ class Gear(BaseFigure):
 
 e = Eel(vsync=False)
 
-global g, c
-g = Gear(300, 200, inner_radius=40, outer_radius=55)
-c = Circle(300, 200, radius=20)
-
 @e.draw
 def render(eel):
-    global g, c
-
     fps = eel.fps or 60
 
     x, y = eel.mouse
-    g.x = c.x = x
-    g.y = c.y = y
 
+    g = fig.drawGear(x, y, 40, 55, target=eel)
     g.angle += 0.01 / fps * 60
-    g.drawTo(eel)
-    c.drawTo(eel)
+
+    fig.drawCircle(x, y, 20, target=eel)
 
 e.run()
