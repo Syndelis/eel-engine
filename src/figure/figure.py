@@ -46,8 +46,6 @@ class BaseFigure(_BaseFigure):
         globals()[f'draw{cls.__name__}'] =\
         globals()[f'draw{cls.__name__[:4]}'] = func()
 
-        print(f'Registered draw{cls.__name__}')
-
 
     @property
     def pos(self):
