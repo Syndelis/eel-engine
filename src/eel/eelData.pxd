@@ -1,8 +1,9 @@
 cdef extern from "eelData.h":
 
     ctypedef unsigned char byte
-    cdef struct _Color:
-        byte r, g, b, a
+    cdef union _Color:
+        unsigned int hex
+        byte a, b, g, r
 
     cdef struct _Point:
         float x, y

@@ -48,10 +48,10 @@ cdef class Widget:
     cdef public int x, y, width, height
 
     def __cinit__(self, *args, **kwargs):
-        self.sg = [  0, 173, 239, 255] # Windows 10 blue
-        self.fg = [255, 255, 255, 255]
-        self.bg = [  0,   0,   0, 255]
-        self.dg = [ 40,  40,  40, 255]
+        self.sg.hex = 0x00ADEFFF #[  0, 173, 239, 255] # Windows 10 blue
+        self.fg.hex = 0xFFFFFFFF #[255, 255, 255, 255]
+        self.bg.hex = 0x000000FF #[  0,   0,   0, 255]
+        self.dg.hex = 0x282828FF #[ 40,  40,  40, 255]
 
         self.poly.texture = 0
         self.poly.program = 0
@@ -62,32 +62,52 @@ cdef class Widget:
         self.disabled = 0
 
 
-    cpdef setFg(self, byte r, byte g, byte b, byte a=255):
-        self.fg.r = r
-        self.fg.g = g
-        self.fg.b = b
-        self.fg.a = a
+    cpdef setFg(self, unsigned int r, byte g, byte b, byte a=255):
+        
+        if (r > 255):
+            self.fg.hex = r
+
+        else:
+            self.fg.r = <byte>r
+            self.fg.g = g
+            self.fg.b = b
+            self.fg.a = a
 
 
-    cpdef setBg(self, byte r, byte g, byte b, byte a=255):
-        self.bg.r = r
-        self.bg.g = g
-        self.bg.b = b
-        self.bg.a = a
+    cpdef setBg(self, unsigned int r, byte g, byte b, byte a=255):
+        
+        if (r > 255):
+            self.bg.hex = r
+
+        else:
+            self.bg.r = <byte>r
+            self.bg.g = g
+            self.bg.b = b
+            self.bg.a = a
 
 
-    cpdef setDg(self, byte r, byte g, byte b, byte a=255):
-        self.dg.r = r
-        self.dg.g = g
-        self.dg.b = b
-        self.dg.a = a
+    cpdef setDg(self, unsigned int r, byte g, byte b, byte a=255):
+        
+        if (r > 255):
+            self.dg.hex = r
+
+        else:
+            self.dg.r = <byte>r
+            self.dg.g = g
+            self.dg.b = b
+            self.dg.a = a
 
 
-    cpdef setSg(self, byte r, byte g, byte b, byte a=255):
-        self.sg.r = r
-        self.sg.g = g
-        self.sg.b = b
-        self.sg.a = a
+    cpdef setSg(self, unsigned int r, byte g, byte b, byte a=255):
+        
+        if (r > 255):
+            self.sg.hex = r
+
+        else:
+            self.sg.r = <byte>r
+            self.sg.g = g
+            self.sg.b = b
+            self.sg.a = a
 
 
     cdef Color drawColor(self):

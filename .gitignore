@@ -17,6 +17,7 @@ gui.c
 *.png
 *.oyd
 *.lib
+install.sh
 
 # Ignore Premake output
 /obj/

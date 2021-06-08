@@ -33,10 +33,34 @@ ctypedef _Polygon Polygon
 ctypedef _Color Color
 # ------------------------------------------------------------------------------
 """
-Functions
+Globals
 """
 cdef float ux[4096]
 cdef float uy[4096]
+cdef Color __global_color
+__global_color.hex = 0xFF
+# ------------------------------------------------------------------------------
+"""
+Functions
+"""
+
+cpdef setColor(unsigned int r, byte g=0, byte b=0, byte a=255):
+
+    if (r > 255 and g == 0 and b == 0):
+            __global_color.hex = r
+
+    else:
+        __global_color.r = <byte> r
+        __global_color.g = g
+        __global_color.b = b
+        __global_color.a = a
+
+    return __global_color.hex
+
+
+cpdef getColor():
+    return __global_color.hex
+
 # ------------------------------------------------------------------------------
 """
 Buffer-less BaseFigure implementation
@@ -49,7 +73,7 @@ cdef class _BaseFigure:
 
     def __cinit__(self, x, y, *args, **kwargs):
 
-        self.poly.color = [255, 255, 255, 255]
+        self.poly.color.hex = 0xFFFFFFFF #[255, 255, 255, 255]
         self.poly.mode = GL_LINE_LOOP
         self.poly.texture = 0
         self.poly.program = 0
@@ -57,21 +81,22 @@ cdef class _BaseFigure:
         self.texture_set = 0
 
     
-    cpdef setColor(self, byte r, byte g, byte b, byte a=255):
+    cpdef setColor(self, unsigned int r, byte g=0, byte b=0, byte a=255):
 
-        self.poly.color.r = r
-        self.poly.color.g = g
-        self.poly.color.b = b
-        self.poly.color.a = a
+        if (r > 255 and g == 0 and b == 0):
+            self.poly.color.hex = r
+
+        else:
+            self.poly.color.r = <byte> r
+            self.poly.color.g = g
+            self.poly.color.b = b
+            self.poly.color.a = a
 
         return self
 
 
     cpdef getColor(self):
-        return {
-            'r': self.poly.color.r, 'g': self.poly.color.g,
-            'b': self.poly.color.b, 'a': self.poly.color.a,
-        }
+        return self.poly.color.hex
 
 
     cpdef setMode(self, int mode):
@@ -206,7 +231,7 @@ cdef class _BaseText(_BaseFigure):
 
     def __cinit__(self, int x, int y, text, _BaseFont font=None):
 
-        self.poly.color = [255, 255, 255, 255]
+        self.poly.color.hex = 0xFFFFFFFF#[255, 255, 255, 255]
         self.poly.mode = GL_QUADS
         self.poly.point_size = 1.
         self.poly.used = 4

@@ -10,7 +10,7 @@ class BaseFigure(_BaseFigure):
     y: int
 
     def __post_init__(self, fill=False):
-        if fill: self.setMode(9)
+        if (fill): self.setMode(9)
 
 
     def __init_subclass__(cls):
@@ -36,6 +36,8 @@ class BaseFigure(_BaseFigure):
                     for name, val in kwargs.items():
                         inst.__setattr__(name, val)
 
+                inst.setColor(getColor())
+                inst.setMode(2 + 7 * kwargs.get('fill'))
                 inst.drawTo(target)
 
                 return inst
@@ -46,6 +48,7 @@ class BaseFigure(_BaseFigure):
         globals()[f'draw{cls.__name__}'] =\
         globals()[f'draw{cls.__name__[:4]}'] = func()
 
+    # ----------------------------------
 
     @property
     def pos(self):
@@ -54,6 +57,26 @@ class BaseFigure(_BaseFigure):
     @pos.setter
     def pos(self, v):
         self.x, self.y = v
+
+    # ----------------------------------
+
+    @property
+    def fill(self):
+        pass
+
+    @fill.setter
+    def fill(self, val: bool):
+        self.setMode(2 + 7 * val)
+
+    # ----------------------------------
+
+    @property
+    def color(self):
+        return self.getColor()
+
+    @color.setter
+    def color(self, val: int):
+        self.setColor(val)
         
 
 @dataclass

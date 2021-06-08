@@ -7,8 +7,13 @@ struct _Point {
     float x, y;
 };
 
-struct _Color {
-    byte r, g, b, a;
+union _Color {
+
+    unsigned int hex;
+
+    struct {
+        byte a, b, g, r;
+    };
 };
 
 struct _Polygon {
@@ -16,7 +21,7 @@ struct _Polygon {
     float *x, *y;
     int used;
 
-    struct _Color color;
+    union _Color color;
     float point_size;
     unsigned int mode, texture, program;
 

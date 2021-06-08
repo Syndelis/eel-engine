@@ -182,7 +182,7 @@ cdef class Canvas(Paintable):
         self._x = x
         self._y = y
 
-        self.poly.color = [255, 255, 255, 255]
+        self.poly.color.hex = 0xFFFFFFFF # [255, 255, 255, 255]
         self.poly.mode = GL_QUADS
         self.poly.point_size = 1.
         self.poly.used = 4
@@ -281,8 +281,8 @@ cdef class Eel(Paintable):
         self.fullscreen = fullscreen
 
         # Drawing related
-        self.clear_color = [000, 000, 000, 255]
-        self.draw_color  = [255, 255, 255, 255]
+        self.clear_color.hex = 0x000000FF# [000, 000, 000, 255]
+        self.draw_color.hex  = 0XFFFFFFFF# [255, 255, 255, 255]
         self.point_size = 1.0
         self.framebuffer = 0
 
