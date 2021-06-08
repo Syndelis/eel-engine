@@ -20,5 +20,7 @@ typedef struct _Character {
 } Character;
 
 Character *loadCharacters(char *font, int fontsize);
+Character *getChar(Character *font, int ind);
+int u8_nextchar(char *s, int *i, int *ch);
 
 #endif

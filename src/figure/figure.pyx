@@ -248,6 +248,7 @@ cdef class _BaseText(_BaseFigure):
     cpdef drawTo(self, Paintable eel):
 
         cdef int i = 0
+        cdef int utfc
         cdef Character *ch
         cdef float xpos, ypos, fx, fy, width, height
 
@@ -257,10 +258,14 @@ cdef class _BaseText(_BaseFigure):
         fx = self.x / height
         fy = self.y / height
 
-        for i in range(0, self._strlen):
-            ch = self.font + <int>self.str[i]
+        # for i in range(0, self._strlen):
 
-            if (<int>self.str[i] == <int>'\n'):
+        while u8_nextchar(self.str, &i, &utfc):
+            # ch = self.font + <int>self.str[i]
+            # ch = self.font + utfc
+            ch = getChar(self.font, utfc)
+
+            if (<int>utfc == <int>'\n'):
                 fx = self.x / height
                 fy += (ch.size.y + ch.bear.y) / height
 
@@ -282,8 +287,6 @@ cdef class _BaseText(_BaseFigure):
                 eel.render(&self.poly)
                 fx += (ch.advance >> 6) / height
 
-            i += 1
-
 
     cpdef getText(self):
         return self.str
@@ -298,14 +301,17 @@ cdef class _BaseText(_BaseFigure):
 
         cdef int x = 0
         cdef int i = 0
+        cdef int utfc
         cdef Character *ch
         
         cdef int max_x = 0
 
-        for i in range(0, self._strlen):
-            ch = self.font + <int>self.str[i]
+        # for i in range(0, self._strlen):
+        while u8_nextchar(self.str, &i, &utfc):
+            #ch = self.font + utfc
+            ch = getChar(self.font, utfc)
 
-            if (<int>self.str[i] == <int>'\n'):
+            if (<int>utfc == <int>'\n'):
                 max_x = max(x, max_x)
                 x = 0
 
@@ -318,12 +324,15 @@ cdef class _BaseText(_BaseFigure):
         
         cdef int y = 0
         cdef int i = 0
+        cdef int utfc
         cdef Character *ch
 
-        for i in range(0, self._strlen):
-            ch = self.font + <int>self.str[i]
+        # for i in range(0, self._strlen):
+        while u8_nextchar(self.str, &i, &utfc):
+            # ch = self.font + utfc
+            ch = getChar(self.font, utfc)
 
-            if (<int>self.str[i] == <int>'\n'):
+            if (<int>utfc == <int>'\n'):
                 y += ch.size.y
 
             else: y = max(y, ch.size.y)
@@ -334,10 +343,13 @@ cdef class _BaseText(_BaseFigure):
     def getBearing(self):
         cdef int b = 0
         cdef int i = 0
+        cdef int utfc
         cdef Character *ch
 
-        for i in range(0, self._strlen):
-            ch = self.font + <char>self.str[i]
+        # for i in range(0, self._strlen):
+        while u8_nextchar(self.str, &i, &utfc):
+            # ch = self.font + utfc
+            ch = getChar(self.font, utfc)
             b = max(b, ch.bear.y)
 
         return b
@@ -379,7 +391,12 @@ cdef class _BaseFont:
 
     cdef void setFont(self, char *name, int size=32):
 
-        self.font = loadCharacters(name, size)
+        cdef Character *font
+
+        with nogil:
+            font = loadCharacters(name, size)
+
+        self.font = font
 
         if self.font == NULL:
             raise Exception(

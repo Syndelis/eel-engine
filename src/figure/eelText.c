@@ -5,9 +5,18 @@
 #include <GL/gl.h>
 #include <stdio.h>
 
+// https://github.com/ryanoasis/nerd-fonts/wiki/Glyph-Sets-and-Code-Points
+#define NERDFONT_START 	0xe000
+#define NERDFONT_END   	0xfd46
+#define ASCII_END 		0xff
+
+#define CHR_AMNT		ASCII_END + (NERDFONT_END - NERDFONT_START)
+
+static Character char_buf[CHR_AMNT];
+
 Character *loadCharacters(char *font, int fontsize) {
 
-    FT_Library ft;
+	FT_Library ft;
 	if (FT_Init_FreeType(&ft)) {
 		return NULL;
 	}
@@ -23,13 +32,22 @@ Character *loadCharacters(char *font, int fontsize) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Character *char_buf = (Character *)malloc(sizeof(Character) * 256);
+	// NOTE: For some reason, FreeType will double-free when so many characters
+	//		 are allocated, just like I'm doing here.
+	//		 For this reason, until work out a solution, only a single font
+	//		 can be used at a time, since it will overwrite the global font
+	//		 buffer.
+	//		 A possible solution is looking how to ask Cython directly for
+	//		 a bunch of free space in advance.
+    // Character *char_buf = (Character *)malloc(sizeof(Character) * CHR_AMNT);
     unsigned int texture;
 
-	for (unsigned char c = 1; c && c < 255; c++) {
+	for (int c = 1; c && c <= CHR_AMNT; c++) {
 
-		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-			printf("Error loading char `%c`. Skipping\n", c);
+		int ct = c > ASCII_END ? c - ASCII_END + NERDFONT_START : c;
+
+		if (FT_Load_Char(face, ct, FT_LOAD_RENDER)) {
+			printf("Error loading char `%x`. Skipping\n", ct);
 			continue;
 		}
 
@@ -59,7 +77,7 @@ Character *loadCharacters(char *font, int fontsize) {
 
 		// printf(
         //     "Bound character `%c` {%u, (%d, %d), (%d, %d), %u}\n",
-		// 	c, p->TextureID, p->size.x, p->size.y, 
+		// 	c, p->TextureID, p->size.x, p->size.y,
         //     p->bear.x, p->bear.y, p->advance
         // );
         glBindTexture(GL_TEXTURE_2D,0);
@@ -71,4 +89,40 @@ Character *loadCharacters(char *font, int fontsize) {
 
 	return char_buf;
 
+}
+
+Character *getChar(Character *font, int ind) {
+
+	int t;
+
+	if ((t = ind - NERDFONT_START) >= 0)
+		return font + (t + ASCII_END);
+
+	else return font + ind;
+
+}
+
+// Code below by Jeff Bezanson
+#define isutf(c) (((c)&0xC0)!=0x80)
+
+static const int offsetsFromUTF8[6] = {
+    0x00000000UL, 0x00003080UL, 0x000E2080UL,
+    0x03C82080UL, 0xFA082080UL, 0x82082080UL
+};
+
+int u8_nextchar(char *s, int *i, int *ch) {
+    *ch = 0;
+    int sz = 0;
+
+    do {
+
+        (*ch) <<= 6;
+        (*ch) += (unsigned char)s[(*i)++];
+        sz++;
+
+    } while (s[*i] && !isutf(s[*i]));
+
+    (*ch) -= offsetsFromUTF8[sz-1];
+
+    return *ch;
 }

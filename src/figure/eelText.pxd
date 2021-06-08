@@ -10,4 +10,6 @@ cdef extern from "eelText.h":
         _Vec size
         _Vec bear
 
-    _Character *loadCharacters(char *font, int fontsize)
+    _Character *loadCharacters(char *font, int fontsize) nogil
+    _Character *getChar(_Character *font, int ind) nogil
+    int u8_nextchar(char *s, int *i, int *ch) nogil
