@@ -308,11 +308,11 @@ cdef class Eel(Paintable):
 
 
     def __dealloc__(self):
-        if self.window: glfwSetWindowShouldClose(self.window, 1);
+        if self.window: glfwSetWindowShouldClose(self.window, 1)
 
 
     cpdef close(self):
-        glfwSetWindowShouldClose(self.window, 1);
+        glfwSetWindowShouldClose(self.window, 1)
 
 
     cpdef open(self):
@@ -323,24 +323,47 @@ cdef class Eel(Paintable):
 
         if not self.vsync: glfwWindowHint(GLFW_DOUBLEBUFFER, 0)
 
+        # cdef int monX, monY, monWidth, monHeight
+        cdef GLFWmonitor *monitor
+        cdef GLFWmonitor *actualmonitor
+        cdef GLFWvidmode *mode
+        cdef int posX, posY
+
+        actualmonitor = NULL
+
+        monitor = glfwGetPrimaryMonitor()
+        mode = glfwGetVideoMode(monitor)
+        # glfwGetMonitorWorkarea(monitor, &monX, &monY, &monWidth, &monHeight)
+
         self.window = glfwCreateWindow(
             self.width, self.height, self.name,
             NULL , NULL
         )
 
-        cdef GLFWmonitor *monitor
-        cdef GLFWvidmode *mode
-        cdef int monX, monY, monWidth, monHeight
+        posX = (mode.width  - self.width ) / 2
+        posY = (mode.height - self.height) / 2
 
         if self.fullscreen:
-            monitor = glfwGetPrimaryMonitor()
-            mode = glfwGetVideoMode(monitor)
+            self.width = mode.width
+            self.height = mode.height
+            actualmonitor = monitor
 
-            glfwGetMonitorWorkarea(monitor, &monX, &monY, &monWidth, &monHeight)
-            glfwSetWindowMonitor(
-                self.window, monitor, 0, 0, mode.width, mode.height,
-                mode.refreshRate
-            )
+        glfwSetWindowMonitor(
+            self.window, actualmonitor, posX, posY,
+            self.width, self.height, mode.refreshRate
+        )
+
+        # cdef int monX, monY, monWidth, monHeight
+
+        # if self.fullscreen:
+            # monitor = glfwGetPrimaryMonitor()
+            # mode = glfwGetVideoMode(monitor)
+
+            # glfwGetMonitorWorkarea(monitor, &monX, &monY, &monWidth, &monHeight)
+            # glfwSetWindowMonitor(
+            #     self.window, monitor, 0, 0, mode.width, mode.height,
+            #     mode.refreshRate
+            # )
 
 
         if (not self.window):
