@@ -95,8 +95,12 @@ Character *getChar(Character *font, int ind) {
 
 	int t;
 
-	if ((t = ind - NERDFONT_START) >= 0)
-		return font + (t + ASCII_END);
+	if ((t = ind - NERDFONT_START) >= 0) {
+		
+		if ((t += ASCII_END) >= CHR_AMNT) return font + 'E'; // Silent error
+		else return font + t;
+
+	}
 
 	else return font + ind;
 

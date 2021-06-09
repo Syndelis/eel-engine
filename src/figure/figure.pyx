@@ -306,16 +306,17 @@ cdef class _BaseText(_BaseFigure):
         
         cdef int max_x = 0
 
-        # for i in range(0, self._strlen):
+        if self.font == NULL: return 0
+
         while u8_nextchar(self.str, &i, &utfc):
-            #ch = self.font + utfc
             ch = getChar(self.font, utfc)
 
-            if (<int>utfc == <int>'\n'):
-                max_x = max(x, max_x)
-                x = 0
+            if ch != NULL:
+                if (<int>utfc == <int>'\n'):
+                    max_x = max(x, max_x)
+                    x = 0
 
-            x += (ch.advance >> 6)
+                x += (ch.advance >> 6)
 
         return max(x, max_x)
 
@@ -327,15 +328,16 @@ cdef class _BaseText(_BaseFigure):
         cdef int utfc
         cdef Character *ch
 
-        # for i in range(0, self._strlen):
+        if self.font == NULL: return 0
+
         while u8_nextchar(self.str, &i, &utfc):
-            # ch = self.font + utfc
             ch = getChar(self.font, utfc)
 
-            if (<int>utfc == <int>'\n'):
-                y += ch.size.y
+            if ch != NULL:
+                if (<int>utfc == <int>'\n'):
+                    y += ch.size.y
 
-            else: y = max(y, ch.size.y)
+                else: y = max(y, ch.size.y)
 
         return y
 
@@ -346,11 +348,13 @@ cdef class _BaseText(_BaseFigure):
         cdef int utfc
         cdef Character *ch
 
-        # for i in range(0, self._strlen):
+        if self.font == NULL: return 0
+
         while u8_nextchar(self.str, &i, &utfc):
-            # ch = self.font + utfc
             ch = getChar(self.font, utfc)
-            b = max(b, ch.bear.y)
+
+            if ch != NULL:
+                b = max(b, ch.bear.y)
 
         return b
 
