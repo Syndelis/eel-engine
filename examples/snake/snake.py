@@ -21,7 +21,7 @@ for i in range(ATTEMPTS):
 WIDTH, HEIGHT = 640, 480
 SQ = 32
 GAME_END = False
-VSYNC = True # Setting this to false will likely cause screen flickering
+VSYNC = False # Setting this to false will likely cause screen flickering
 
 class Snake:
 
@@ -65,13 +65,13 @@ class Snake:
 
         for i in range(1, len(self.body)):
             v = self.body[i]
-            if v and nextpos == v.pos:
+            if v and (nextpos == v.pos).all():
                 return True
 
         for i in range(1, len(self.body))[::-1]:
             v = self.body[i]
             if v:
-                v.pos = self.body[i-1].pos
+                v.xy = self.body[i-1].pos
 
             else:
                 v = self.body[i-1]
@@ -80,7 +80,7 @@ class Snake:
                     height=self.grid, fill=True
                 )
 
-        self.body[0].pos = nextpos
+        self.body[0].xy = nextpos
 
 
     def input(self, inp):
@@ -138,10 +138,10 @@ def newApple():
     done = False
     while not done:
         done = True
-        apple.pos = (randint(0, player.max[0]/SQ)*SQ, randint(0, player.max[1]/SQ)*SQ)
+        apple.xy = (randint(0, player.max[0]/SQ)*SQ, randint(0, player.max[1]/SQ)*SQ)
 
         for segment in player:
-            if segment and apple.pos == segment.pos:
+            if segment and (apple.pos == segment.pos).all():
                 done = False
 
 
@@ -199,7 +199,7 @@ def gameLogic(eel):
         GAME_END = player.step()
         timer = maxtimer
 
-        if apple.pos == player.head.pos:
+        if (apple.pos == player.head.pos).all():
             player.grow()
             newApple()
 

@@ -61,6 +61,7 @@ def render(eel):
 
     x, y = eel.mouse
 
+
     g = fig.drawGear(x, y, 40, 55, target=eel)
     g.angle += 0.01 / fps * 60
 
