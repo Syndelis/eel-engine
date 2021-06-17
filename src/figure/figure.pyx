@@ -38,7 +38,7 @@ Globals
 cdef float ux[4096]
 cdef float uy[4096]
 cdef Color __global_color
-__global_color.hex = 0xFF
+__global_color.hex = 0xFFFFFFFF
 # ------------------------------------------------------------------------------
 """
 Functions

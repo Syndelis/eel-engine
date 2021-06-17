@@ -45,10 +45,7 @@ def main(eel):
     r.height= dy-r.y
 
     dist = ((c.x-d.x)**2 + (c.y-d.y)**2)**(0.5)
-    # print(f'{dist} > {c.minDistance()} + {d.minDistance()}')
 
-    # t.setText(bytes(f'{c.collidesWith(d)}', 'utf8'))
-    # t.setText(b'%d' % c.collidesWith(d))
     s = b'%d' % eel.fps
     t.setText(s)
 

@@ -2,9 +2,65 @@ from .figure import _BaseFigure
 from .figure import *
 from dataclasses import dataclass, InitVar, field
 from math import pi, cos, sin
+import numpy as np
+from typing import Iterable
+
+class Vector(np.ndarray):
+
+    _valid = 'rgba xyz'
+
+    _translation_table = {
+        v: i
+        for l in _valid.split()
+        for i, v in enumerate(l)
+    }
+
+    def __new__(cls, r, g=None, b=None, a=None):
+        if g is None:
+            return np.asarray(r).view(cls)
+
+        else: return np.asarray([i for i in (r,g,b,a) if i]).view(cls)
+
+
+    def __getattr__(self, attr):
+
+        cls = type(self)
+
+        if len(attr) == 1:
+            return self[cls._translation_table[attr]]
+
+        _len = len(self)
+        return Vector([
+            self[s]
+            if _len > (s := cls._translation_table[i])
+            else 0
+            for i in attr
+        ])
+
+
+    def __setattr__(self, attr, val):
+
+        cls = type(self)
+
+        if len(attr) == 1:
+            self[cls._translation_table[attr]] = val
+            return
+
+        if not isinstance(val, Iterable):
+            val = [val] * len(attr)
+
+        elif len(attr) > len(val):
+            val = [*val] + [val[-1]] * (len(attr) - len(val))
+            
+        for var, v in zip(attr, val):
+            self[cls._translation_table[var]] = v
+
+# ------------------------------------------------------------------------------
 
 @dataclass
 class BaseFigure(_BaseFigure):
+
+    _pos: Vector = field(init=False, default_factory=lambda: Vector([0, 0]))
 
     x: int
     y: int
@@ -23,6 +79,7 @@ class BaseFigure(_BaseFigure):
                 try: annotations.extend(_cls.__annotations__.keys())
                 except: pass
 
+            annotations.pop(0) # Removes 'pos' attribute.
 
             def inner(*args, target, **kwargs):
                 nonlocal inst, annotations
@@ -37,7 +94,7 @@ class BaseFigure(_BaseFigure):
                         inst.__setattr__(name, val)
 
                 inst.setColor(getColor())
-                inst.setMode(2 + 7 * kwargs.get('fill'))
+                inst.setMode(2 + 7 * (kwargs.get('fill') or 0))
                 inst.drawTo(target)
 
                 return inst
@@ -50,13 +107,29 @@ class BaseFigure(_BaseFigure):
 
     # ----------------------------------
 
+    def __getattr__(self, attr):
+        return self._pos.__getattr__(attr)
+
+
+    def __setattr__(self, attr, val):
+        for k in attr:
+            if k not in Vector._translation_table.keys(): break
+
+        else:
+            self._pos.__setattr__(attr, val)
+            return
+
+        super().__setattr__(attr, val)
+
+    # ----------------------------------
+
     @property
     def pos(self):
-        return (self.x, self.y)
+        return self._pos
 
     @pos.setter
-    def pos(self, v):
-        self.x, self.y = v
+    def pos(self, val):
+        self._pos[...] = val
 
     # ----------------------------------
 
