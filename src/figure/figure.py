@@ -19,7 +19,8 @@ class Vector(np.ndarray):
         if g is None:
             return np.asarray(r).view(cls)
 
-        else: return np.asarray([i for i in (r,g,b,a) if i is not None]).view(cls)
+        else:
+            return np.asarray([i for i in (r,g,b,a) if i is not None]).view(cls)
 
 
     def __getattr__(self, attr):
