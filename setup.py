@@ -43,6 +43,9 @@ SOIL            = ('SOIL',)
 FREETYPE        = ('freetype',)
 FREETYPE_PATH   = ('/usr/include/freetype2',)
 
+IMGUI           = ('imgui',)
+IMGUI_PATH      = ('lib/imgui',)
+
 BASE_LIB += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
 BASE_INC += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
 
@@ -79,8 +82,8 @@ setup(
             "gui",
             ["src/gui/gui.pyx"],
             libraries=[*OPENGL],
-            library_dirs=[*BASE_LIB],
-            include_dirs=[*BASE_INC],
+            library_dirs=[*BASE_LIB, *IMGUI_PATH],
+            include_dirs=[*BASE_INC, *IMGUI_PATH],
             **EXTRA_ARGS
         )
     ],
