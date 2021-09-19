@@ -42,14 +42,14 @@ cdef extern from "imgui.cpp" namespace "ImGui":
     void StyleColorsClassic() nogil
 
 
-cdef extern from "backends/imgui_impl_opengl3.h":
+cdef extern from "imgui_impl_opengl3.h":
     bool ImGui_ImplOpenGL3_Init(const char *glsl_version) nogil
     void ImGui_ImplOpenGL3_Shutdown() nogil
     void ImGui_ImplOpenGL3_NewFrame() nogil
     void ImGui_ImplOpenGL3_RenderDrawData(ImDrawData *draw_data) nogil
 
 
-cdef extern from "backends/imgui_impl_glfw.h":
+cdef extern from "imgui_impl_glfw.h":
     bool ImGui_ImplGlfw_InitForOpenGL(GLFWwindow *window, bool install_callbacks) nogil
     bool ImGui_ImplGlfw_InitForVulkan(GLFWwindow *window, bool install_callbacks) nogil
     bool ImGui_ImplGlfw_InitForOther(GLFWwindow *window, bool install_callbacks) nogil

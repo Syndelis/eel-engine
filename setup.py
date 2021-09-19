@@ -43,8 +43,7 @@ SOIL            = ('SOIL',)
 FREETYPE        = ('freetype',)
 FREETYPE_PATH   = ('/usr/include/freetype2',)
 
-IMGUI           = ('imgui',)
-IMGUI_PATH      = ('lib/imgui',)
+IMGUI_PATH      = ('lib/imgui', 'lib/imgui/backends')
 
 BASE_LIB += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
 BASE_INC += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
@@ -80,7 +79,7 @@ setup(
         ),
         Extension(
             "gui",
-            ["src/gui/gui.pyx"],
+            ["src/gui/gui.pyx", "lib/imgui/imgui.cpp", "lib/imgui/backends/imgui_impl_opengl3.cpp", "lib/imgui/backends/imgui_impl_opengl3.cpp"],
             libraries=[*OPENGL],
             library_dirs=[*BASE_LIB, *IMGUI_PATH],
             include_dirs=[*BASE_INC, *IMGUI_PATH],
