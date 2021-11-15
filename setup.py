@@ -79,11 +79,21 @@ setup(
         ),
         Extension(
             "gui",
-            ["src/gui/gui.pyx", "lib/imgui/imgui.cpp", "lib/imgui/backends/imgui_impl_opengl3.cpp", "lib/imgui/backends/imgui_impl_opengl3.cpp"],
-            libraries=[*OPENGL],
-            library_dirs=[*BASE_LIB, *IMGUI_PATH],
+            [
+                "src/gui/gui.pyx",
+                "lib/imgui/imgui.cpp", "lib/imgui/imgui_draw.cpp",
+                "lib/imgui/imgui_tables.cpp", "lib/imgui/imgui_widgets.cpp",
+                "lib/imgui/backends/imgui_impl_glfw.cpp",
+                "lib/imgui/backends/imgui_impl_opengl3.cpp"
+            ],
+            libraries=[*OPENGL, *GLFW],
+            library_dirs=[*BASE_LIB],
             include_dirs=[*BASE_INC, *IMGUI_PATH],
             **EXTRA_ARGS
+            # **{
+            #     'extra_link_args': '-Wno-unused-result -ffunction-sections -fdata-sections -Wl,--gc-sections -Wl,--print-gc-sections'.split(),
+            #     **EXTRA_ARGS
+            # }
         )
     ],
     include_path=[*BASE_INC]

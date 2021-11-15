@@ -31,7 +31,7 @@ cpdef startGUI(Eel window):
     StyleColorsDark()
 
     ImGui_ImplGlfw_InitForOpenGL(window.window, 1)
-    ImGui_ImplOpenGL3_Init(b"#version 330 core")
+    ImGui_ImplOpenGL3_Init(b"#version 150")
 
 # --------------------------------------
 
@@ -39,6 +39,11 @@ cpdef updateGUI():
     ImGui_ImplOpenGL3_NewFrame()
     ImGui_ImplGlfw_NewFrame()
     NewFrame()
+
+
+cpdef renderGUI():
+    Render()
+    ImGui_ImplOpenGL3_RenderDrawData(GetDrawData())
 
 
 # --------------------------------------

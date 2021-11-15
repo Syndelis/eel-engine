@@ -20,7 +20,8 @@ cdef extern from "imgui.h":
     struct ImDrawData:
         pass
 
-cdef extern from "imgui.cpp" namespace "ImGui":
+
+cdef extern from "imgui.h" namespace "ImGui":
 
     ImGuiContext *CreateContext(ImFlontAtlas *shared_font_atlas) nogil
     ImGuiContext *CreateContext() nogil
@@ -32,6 +33,10 @@ cdef extern from "imgui.cpp" namespace "ImGui":
     bool Begin(const char *name, bool *p_open, ImGuiWindowFlags flags) nogil
     bool Begin(const char *name) nogil
     void End() nogil
+
+    ImDrawData *GetDrawData() nogil
+
+    void Render() nogil
 
     void NewFrame() nogil
 
