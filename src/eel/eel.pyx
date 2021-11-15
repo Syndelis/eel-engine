@@ -478,6 +478,7 @@ cdef class Eel(Paintable):
 
         while (not glfwWindowShouldClose(self.window)):
 
+            glfwPollEvents()
             glfwMakeContextCurrent(self.window)
 
             glClearColor(
@@ -522,7 +523,6 @@ cdef class Eel(Paintable):
             self.calculateFPS()
 
             if self.vsync: glfwSwapBuffers(self.window)
-            glfwPollEvents()
 
         glfwDestroyWindow(self.window)
 

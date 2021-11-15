@@ -12,11 +12,12 @@
 eel.c
 figure.c
 shader.c
-gui.c
+gui.c*
 *.txt
 *.png
 *.oyd
 *.lib
+*.ini
 install.sh
 
 # Ignore Premake output

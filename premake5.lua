@@ -67,7 +67,7 @@ project "Engine"
 		}
 		cleancommands {
 			"rm -rf build obj eelengine",
-			"rm *.a *.make Makefile",
+			"rm -f *.a *.make Makefile",
 			"rm src/eel/eel.c",
 			"rm src/figure/figure.c",
 			"rm src/gui/gui.c",
