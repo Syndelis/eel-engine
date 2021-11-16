@@ -70,4 +70,8 @@ cdef class Window:
     cpdef draw(self):
         Begin(self.name)
         Text(b"This is a test")
+        Button(b"Baton")
         End()
+
+        ShowMetricsWindow()
+        ShowDemoWindow()

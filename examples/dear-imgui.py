@@ -4,7 +4,7 @@ from eelengine.gui import startGUI, updateGUI, renderGUI, endGUI, Window
 # This example is only purposed to experiment with the WIP Dear Imgui integration
 # Please disregard anything here, as it will ceirtanly be changed in the future
 
-e = Eel()
+e = Eel(width=1280, height=720)
 global win
 win = None
 
