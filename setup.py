@@ -1,8 +1,12 @@
 # Cython compiler
 
-from distutils.core import setup
-from distutils.extension import Extension
+from setuptools import setup
+from setuptools.extension import Extension
 from Cython.Build import cythonize
+
+from sys import path
+path.insert(0, "lib/pybind11")
+from pybind11.setup_helpers import Pybind11Extension
 
 from os import name
 
@@ -19,7 +23,7 @@ if name == "posix":
     BASE_INC    = ('.',)
 
     # EXRTA ARGS -----------------------
-    EXTRA_ARGS  = {'extra_compile_args': '-O2 -Wno-unused-variable -Wno-discarded-qualifiers'.split()}
+    EXTRA_ARGS  = {'extra_compile_args': '-O2 -Wno-unused-variable -Wno-discarded-qualifiers -fpermissive -Wno-error=format-security'.split()}
 
 
 else:
@@ -52,7 +56,7 @@ BASE_INC += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shad
 setup(
     name='Eel Engine',
     ext_package='eelengine',
-    ext_modules=cythonize([
+    ext_modules=[*cythonize([
         Extension(
             "eel",
             ["src/eel/eel.pyx", "src/shader/eelShader.c"],
@@ -97,6 +101,21 @@ setup(
             # }
         )
     ],
-    include_path=[*BASE_INC]
-    )
+    include_path=[*BASE_INC],
+    language_level="3"
+    ),
+        Pybind11Extension(
+            "imgui_wrapper",
+            [
+                "src/imgui_wrapper/imgui_wrapper.cpp",
+                "lib/imgui/imgui.cpp", "lib/imgui/imgui_draw.cpp",
+                "lib/imgui/imgui_demo.cpp",
+                "lib/imgui/imgui_tables.cpp", "lib/imgui/imgui_widgets.cpp"
+            ],
+            libraries=[*OPENGL, *GLFW],
+            library_dirs=[*BASE_LIB],
+            include_dirs=[*BASE_INC, *IMGUI_PATH],
+            **EXTRA_ARGS
+        )
+    ]
 )

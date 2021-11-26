@@ -23,11 +23,9 @@ from eel cimport Eel
 #   GLOBALS
 # ------------------------------------------------------------------------------
 
-cdef ImGuiIO *io = NULL
-
 cpdef startGUI(Eel window):
     CreateContext()
-    io = GetIO()
+    # io = GetIO()
     StyleColorsDark()
 
     ImGui_ImplGlfw_InitForOpenGL(window.window, 1)
@@ -52,26 +50,3 @@ cpdef endGUI():
     ImGui_ImplOpenGL3_Shutdown()
     ImGui_ImplGlfw_Shutdown()
     DestroyContext()
-
-    io = NULL
-
-# ------------------------------------------------------------------------------
-#   CLASSES
-# ------------------------------------------------------------------------------
-
-cdef class Window:
-
-    cdef public object name
-
-    def __cinit__(self, name="Window"):
-        self.name = bytes(name, "utf8")
-
-
-    cpdef draw(self):
-        Begin(self.name)
-        Text(b"This is a test")
-        Button(b"Baton")
-        End()
-
-        ShowMetricsWindow()
-        ShowDemoWindow()

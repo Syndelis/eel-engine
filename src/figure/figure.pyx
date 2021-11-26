@@ -183,8 +183,8 @@ cdef class _BaseFigure:
         cdef int mx, my, i
 
         # Approx.'ing to max
-        mx = (maxx + minx) / 2
-        my = (maxy + miny) / 2
+        mx = (maxx + minx) >> 1
+        my = (maxy + miny) >> 1
 
         for i in range(0, 4):
 
@@ -192,20 +192,20 @@ cdef class _BaseFigure:
                 return True
 
             else:
-                mx = (maxx + mx) / 2
-                my = (maxy + my) / 2
+                mx = (maxx + mx) >> 1
+                my = (maxy + my) >> 1
 
         # Approx.'ing to min
-        mx = (minx + (maxx + minx) / 2) / 2
-        my = (miny + (maxy + miny) / 2) / 2
+        mx = (minx + (maxx + minx) >> 1) >> 1
+        my = (miny + (maxy + miny) >> 1) >> 1
         for i in range(0, 4):
 
             if self.isInside(mx, my) and other.isInside(mx, my):
                 return True
 
             else:
-                mx = (minx + mx) / 2
-                my = (miny + my) / 2
+                mx = (minx + mx) >> 1
+                my = (miny + my) >> 1
 
         # Rectangle between the centers
         for y in range(miny, maxy):
@@ -265,7 +265,7 @@ cdef class _BaseText(_BaseFigure):
             # ch = self.font + utfc
             ch = getChar(self.font, utfc)
 
-            if (<int>utfc == <int>'\n'):
+            if (<int>utfc == <int>b'\n'):
                 fx = self.x / height
                 fy += (ch.size.y + ch.bear.y) / height
 
@@ -312,7 +312,7 @@ cdef class _BaseText(_BaseFigure):
             ch = getChar(self.font, utfc)
 
             if ch != NULL:
-                if (<int>utfc == <int>'\n'):
+                if (<int>utfc == <int>b'\n'):
                     max_x = max(x, max_x)
                     x = 0
 
@@ -334,7 +334,7 @@ cdef class _BaseText(_BaseFigure):
             ch = getChar(self.font, utfc)
 
             if ch != NULL:
-                if (<int>utfc == <int>'\n'):
+                if (<int>utfc == <int>b'\n'):
                     y += ch.size.y
 
                 else: y = max(y, ch.size.y)

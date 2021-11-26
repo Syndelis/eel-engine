@@ -51,6 +51,7 @@ project "Engine"
 
 	filter "system:windows"
 		buildcommands {
+			"mkdir -p eelengine",
 			"python setup.py build_ext --inplace --compiler=mingw64 -DMS_WIN64",
 			"cp src/eel/eel.py eelengine/__init__.py",
 			"mkdir -p eelengine/figure && mv eelengine/figure*pyd eelengine/figure",
@@ -60,6 +61,7 @@ project "Engine"
 
 	filter "system:linux"
 		buildcommands {
+			"mkdir -p eelengine",
 			"python3 setup.py build_ext --inplace",
 			"cp src/eel/eel.py eelengine/__init__.py",
 			"mkdir -p eelengine/figure && mv eelengine/figure*so eelengine/figure",
