@@ -68,10 +68,7 @@ project "Engine"
 		cleancommands {
 			"rm -rf build obj eelengine",
 			"rm -f *.a *.make Makefile",
-			"rm src/eel/eel.c",
-			"rm src/figure/figure.c",
-			"rm src/gui/gui.c",
-			"rm src/shader/shader.c"
+			"rm -f src/eel/eel.c src/figure/figure.c src/gui/gui.cpp src/shader/shader.c",
 		}
 
 	filter {}

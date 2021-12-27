@@ -14,7 +14,7 @@ from libc.string cimport strlen, strcpy
 from glew cimport *
 from gl cimport *
 from glfw3 cimport *
-from imgui cimport *
+cimport imgui
 
 # Eel integration
 from eel cimport Eel
@@ -23,55 +23,49 @@ from eel cimport Eel
 #   GLOBALS
 # ------------------------------------------------------------------------------
 
-cdef ImGuiIO *io = NULL
+cdef imgui.ImGuiIO *io = NULL
 
-cpdef startGUI(Eel window):
-    CreateContext()
-    io = GetIO()
-    StyleColorsDark()
+cpdef Init(Eel window):
+    imgui.CreateContext()
+    io = imgui.GetIO()
+    imgui.StyleColorsDark()
 
-    ImGui_ImplGlfw_InitForOpenGL(window.window, 1)
-    ImGui_ImplOpenGL3_Init(b"#version 150")
-
-# --------------------------------------
-
-cpdef updateGUI():
-    ImGui_ImplOpenGL3_NewFrame()
-    ImGui_ImplGlfw_NewFrame()
-    NewFrame()
-
-
-cpdef renderGUI():
-    Render()
-    ImGui_ImplOpenGL3_RenderDrawData(GetDrawData())
-
+    imgui.ImGui_ImplGlfw_InitForOpenGL(window.window, 1)
+    imgui.ImGui_ImplOpenGL3_Init(b"#version 150")
 
 # --------------------------------------
 
-cpdef endGUI():
-    ImGui_ImplOpenGL3_Shutdown()
-    ImGui_ImplGlfw_Shutdown()
-    DestroyContext()
+cpdef NewFrame():
+    imgui.ImGui_ImplOpenGL3_NewFrame()
+    imgui.ImGui_ImplGlfw_NewFrame()
+    imgui.NewFrame()
+
+
+cpdef Render():
+    imgui.Render()
+    imgui.ImGui_ImplOpenGL3_RenderDrawData(imgui.GetDrawData())
+
+
+# --------------------------------------
+
+cpdef Terminate():
+    imgui.ImGui_ImplOpenGL3_Shutdown()
+    imgui.ImGui_ImplGlfw_Shutdown()
+    imgui.DestroyContext()
 
     io = NULL
 
 # ------------------------------------------------------------------------------
-#   CLASSES
+# EXPORTED FUNCTIONS
 # ------------------------------------------------------------------------------
 
-cdef class Window:
-
-    cdef public object name
-
-    def __cinit__(self, name="Window"):
-        self.name = bytes(name, "utf8")
+cpdef Begin(char *name):
+    imgui.Begin(name)
 
 
-    cpdef draw(self):
-        Begin(self.name)
-        Text(b"This is a test")
-        Button(b"Baton")
-        End()
+cpdef Text(char *text):
+    imgui.Text(text)
 
-        ShowMetricsWindow()
-        ShowDemoWindow()
+
+cpdef End():
+    imgui.End()

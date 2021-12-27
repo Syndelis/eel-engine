@@ -19,7 +19,7 @@ if name == "posix":
     BASE_INC    = ('.',)
 
     # EXRTA ARGS -----------------------
-    EXTRA_ARGS  = {'extra_compile_args': '-O2 -Wno-unused-variable -Wno-discarded-qualifiers'.split()}
+    EXTRA_ARGS  = {'extra_compile_args': '-O2 -Wno-unused-variable -Wno-discarded-qualifiers -Wno-error=format-security'.split()}
 
 
 else:
@@ -97,6 +97,6 @@ setup(
             # }
         )
     ],
-    include_path=[*BASE_INC]
+    include_path=[*BASE_INC], language_level='3'
     )
 )

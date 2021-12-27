@@ -1,35 +1,29 @@
 from eelengine import Eel
-from eelengine.gui import startGUI, updateGUI, renderGUI, endGUI, Window
+import eelengine.gui as imgui
 
 # This example is only purposed to experiment with the WIP Dear Imgui integration
 # Please disregard anything here, as it will ceirtanly be changed in the future
 
 e = Eel(width=1280, height=720)
-global win
-win = None
 
 @e.load
 def load(eel):
-    global win
-
-    startGUI(eel)
-    win = Window()
+    imgui.Init(eel)
 
 
 @e.draw
 def draw(eel):
-    global win
 
-    updateGUI() # ImGui_ImplOpenGL3_NewFrame()
-                # ImGui_ImplGlfw_NewFrame()
-                # NewFrame()
+    imgui.NewFrame()    # ImGui_ImplOpenGL3_NewFrame()
+                        # ImGui_ImplGlfw_NewFrame()
+                        # NewFrame()
 
-    win.draw()  # Begin(self.name)
-                # Text(b"This is a test")
-                # End()
+    imgui.Begin(b"Test window")
+    imgui.Text(b"Text for window")
+    imgui.End()
 
-    renderGUI() # Render()
+    imgui.Render()
 
 
 e.run()
-endGUI()
+imgui.Terminate()
