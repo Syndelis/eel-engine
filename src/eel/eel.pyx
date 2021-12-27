@@ -23,6 +23,7 @@ from glew cimport glewInit, glBindFramebuffer, glFramebufferTexture, glDrawBuffe
 from glfw3 cimport *
 from gl cimport *
 from SOIL cimport *
+from gui cimport Init, NewFrame, Render, Terminate
 
 # Python STDLIB
 from ctypes import c_ubyte
@@ -379,6 +380,8 @@ cdef class Eel(Paintable):
         self.window_open = 1
         forceGlew()
 
+        Init(self.window)
+
 
     cpdef setColor(self, int r, int g, int b, int a=255):
         """
@@ -514,17 +517,22 @@ cdef class Eel(Paintable):
                 self.clear_color.b / 255.0, self.clear_color.a / 255.0
             )
 
+            NewFrame()
+
             for i in self.deco_draw:
                 i(self)
 
             with nogil:
                 glFlush()
 
+            Render()
+
             self.calculateFPS()
 
             if self.vsync: glfwSwapBuffers(self.window)
 
         glfwDestroyWindow(self.window)
+        Terminate()
 
 
     cpdef run(self):
