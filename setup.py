@@ -19,7 +19,7 @@ if name == "posix":
     BASE_INC    = ('.',)
 
     # EXRTA ARGS -----------------------
-    EXTRA_ARGS  = {'extra_compile_args': '-O2 -Wno-unused-variable -Wno-discarded-qualifiers -Wno-error=format-security'.split()}
+    EXTRA_ARGS  = {'extra_compile_args': '-O2 -Wno-unused-variable -Wno-discarded-qualifiers -Wno-error=format-security -fpermissive'.split()}
 
 
 else:

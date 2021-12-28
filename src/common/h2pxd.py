@@ -9,6 +9,7 @@
 from __future__ import annotations
 from string import Template
 from re import split, fullmatch
+from typing import Generator
 
 TAB = ' ' * 4
 
@@ -55,8 +56,21 @@ def IMGUI_API(line: list[str]) -> str:
 
 # ----------------------------------------------------------
 
-def struct(line: list[str]) -> str:
-    return f'struct {line[0]}:\n{TAB*2}pass'
+def struct(line: list[str], buffer: Generator=None) -> str:
+
+    if not buffer:
+        return f'struct {line[0]}:\n{TAB*2}pass'
+
+    definition = [f'struct {line[0]}:']
+    cpp_skipped = {'(', ')', '{', '<', '>'}
+
+    while (nextline := next(buffer)).find('}') == -1:
+        if not set(nextline) & cpp_skipped:
+            # Skipping last character (;)
+            definition.append(' '.join(nextline.split())[:-1])
+
+    definition.append('pass')
+    return f'\n{TAB*2}'.join(definition)
 
 # ----------------------------------------------------------
 
@@ -64,9 +78,14 @@ def typedef(line: list[str]) -> str:
     return 'ctypedef ' + ' '.join(line)
 
 
-method_translation = {
+full_statements = {
     f.__name__: f
-    for f in (IMGUI_API, struct, typedef)
+    for f in (IMGUI_API, typedef, struct)
+}
+
+part_statements = {
+    f.__name__: f
+    for f in (struct,)
 }
 
 # ------------------------------------------------------------------------------
@@ -89,7 +108,9 @@ if __name__ == '__main__':
     past_namespace = False
 
     with open(SRC_FILE, 'r') as imgui_h:
-        for line in imgui_h.readlines():
+
+        lines = (i for i in imgui_h.readlines())
+        for line in lines:
 
             if NAMESPACE_END in line:
                 break
@@ -111,11 +132,15 @@ if __name__ == '__main__':
                 # Remove everything that is a comment
                 lsplit = lsplit[:lsplit.index(COMM_INDICATOR)]
 
-            if is_full_statement and lsplit and lsplit[0] in method_translation:
+            if lsplit and not EXCLUDED & set(lsplit):
+                if is_full_statement:
+                    if lsplit[0] in full_statements:
+                        imgui_decl[past_namespace].append(
+                            full_statements[lsplit[0]](lsplit[1:]))
 
-                if not EXCLUDED & set(lsplit):
+                elif lsplit[0] in part_statements:
                     imgui_decl[past_namespace].append(
-                        method_translation[lsplit[0]](lsplit[1:]))
+                        part_statements[lsplit[0]](lsplit[1:], lines))
 
     with open(TEMPLATE, 'r') as imgui_template:
         pxd_template = Template(imgui_template.read())
