@@ -80,7 +80,7 @@ setup(
         Extension(
             "gui",
             [
-                "src/gui/gui.pyx",
+                "src/gui/gui.pyx", "src/gui/conf.cpp",
                 "lib/imgui/imgui.cpp", "lib/imgui/imgui_draw.cpp",
                 "lib/imgui/imgui_demo.cpp",
                 "lib/imgui/imgui_tables.cpp", "lib/imgui/imgui_widgets.cpp",

@@ -12,6 +12,7 @@ from libcpp cimport bool as cppbool
 
 import numpy as np
 cimport imgui
+cimport conf
 
 ImVec2_Zeroes = np.zeros((2,))
 ImVec4_Zeroes = np.zeros((4,))
@@ -30,7 +31,8 @@ cdef imgui.ImGuiIO *io = NULL
 cdef Init(GLFWwindow *window):
     imgui.CreateContext()
     io = imgui.GetIO()
-    imgui.StyleColorsDark()
+    # imgui.StyleColorsDark()
+    conf.setNodableStyle(imgui.GetStyle())
 
     imgui.ImGui_ImplGlfw_InitForOpenGL(window, 1)
     imgui.ImGui_ImplOpenGL3_Init(b"#version 150")
