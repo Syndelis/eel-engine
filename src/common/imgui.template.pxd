@@ -5,10 +5,7 @@ from glfw3 cimport *
 
 cdef extern from "imgui.h":
     ctypedef long long __int64
-    struct ImVec2:
-        pass
-    struct ImVec4:
-        pass
+    void ProgressBar(float fraction_, const ImVec2& size_arg_, const char *overlay) nogil
     $imgui_h
 
 

@@ -5,10 +5,7 @@ from glfw3 cimport *
 
 cdef extern from "imgui.h":
     ctypedef long long __int64
-    struct ImVec2:
-        pass
-    struct ImVec4:
-        pass
+    void ProgressBar(float fraction_, const ImVec2& size_arg_, const char* overlay) nogil
     struct ImDrawChannel:
         pass
     struct ImDrawCmd:
@@ -121,6 +118,12 @@ cdef extern from "imgui.h":
     ctypedef void (*ImGuiSizeCallback)(ImGuiSizeCallbackData* data)
     ctypedef void* (*ImGuiMemAllocFunc)(size_t sz, void* user_data)
     ctypedef void (*ImGuiMemFreeFunc)(void* ptr, void* user_data)
+    struct ImVec2:
+        float x, y
+        pass
+    struct ImVec4:
+        float x, y, z, w
+        pass
 
 
 cdef extern from "imgui.h" namespace "ImGui":
