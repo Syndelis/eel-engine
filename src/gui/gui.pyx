@@ -31,8 +31,7 @@ cdef imgui.ImGuiIO *io = NULL
 cdef Init(GLFWwindow *window):
     imgui.CreateContext()
     io = imgui.GetIO()
-    # imgui.StyleColorsDark()
-    conf.setNodableStyle(imgui.GetStyle())
+    conf.setEelStyle(imgui.GetStyle())
 
     imgui.ImGui_ImplGlfw_InitForOpenGL(window, 1)
     imgui.ImGui_ImplOpenGL3_Init(b"#version 150")
@@ -165,3 +164,34 @@ cpdef RadioButton(label: str, cppbool active):
 
 cpdef ProgressBar(float fraction):
     imgui.ProgressBar(fraction)
+
+
+cpdef Bullet():
+    imgui.Bullet()
+
+
+# Combo Box ----------------------------
+
+cpdef BeginCombo(label: str, preview_value: str, imgui.ImGuiComboFlags flags=0):
+
+    imgui.BeginCombo(PyUnicode_AsUTF8(label), PyUnicode_AsUTF8(preview_value), flags)
+    return str(preview_value)
+
+
+cpdef EndCombo():
+    imgui.EndCombo()
+
+
+cpdef Selectable(label: str, selected: bool, imgui.ImGuiSelectableFlags flags=0):
+
+    cdef cppbool p_selected = selected
+    imgui.Selectable(PyUnicode_AsUTF8(label), &p_selected, flags)
+
+    return p_selected
+
+# Drag Sliders -------------------------
+
+# IMGUI_DEMO_H ---------------------------------------------
+
+cpdef ShowDemoWindow():
+    imgui.ShowDemoWindow()
