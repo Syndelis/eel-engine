@@ -1,18 +1,6 @@
-Unicode support for Font/Text (new priority)
-	https://www.cprogramming.com/tutorial/unicode.html
+Unicode support for Font/Text (DONE, albeit a little buggy)
 
-Figure submodule remaster
-    dataclasses
-    NumPy
-        https://cython.readthedocs.io/en/latest/src/userguide/numpy_tutorial.html#numpy-tutorial
-        Vectors everywhere
-            3D
-            GLSL-like member accessing (e.g. vec.xy, vec.xz, vec.rba, ..)
-            Unpacking (.asColor(), .asCoordinates())
-            @ operator for vector product
-            * operator for dot product
-
-    check ctest/
+Figure submodule remaster (DONE)
 
 Better Collision System
     Lots of heuristics before the real stuff kicks in
@@ -29,6 +17,7 @@ Text from stream (function(args) -> str)
 Better sprite Support
     The current one is really bad
     Animated sprites, etc.
+    Migrate from SOIL to SpartanJ/SOIL2
 
 Misc
     Eel.setFPS -> Locks FPS

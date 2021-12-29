@@ -13,9 +13,12 @@ b = False
 c = False
 d = True
 
+global selected
+selected = 0
+
 @e.draw
 def draw(eel):
-    global a, b, c, d
+    global a, b, c, d, selected
 
     imgui.Begin("Text window")
     imgui.Text(f"FPS: {eel.fps}")
@@ -39,10 +42,17 @@ def draw(eel):
 
     imgui.End()
 
-    imgui.Begin("Bar")
-    imgui.ProgressBar(.75)
-    imgui.End()
+    with imgui.Window("Big test"):
+        imgui.ProgressBar(.75)
 
-    print(a, b, c, d)
+        imgui.BeginCombo("##combo", f"Sel: {selected}")
+
+        for i in range(5):
+            if imgui.Selectable(f"Option {i}", selected==i):
+                selected = i
+
+        imgui.EndCombo()
+
+    imgui.ShowDemoWindow()
 
 e.run()

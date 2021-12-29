@@ -23,7 +23,7 @@ from glew cimport glewInit, glBindFramebuffer, glFramebufferTexture, glDrawBuffe
 from glfw3 cimport *
 from gl cimport *
 from SOIL cimport *
-from gui cimport Init, NewFrame, Render, Terminate
+from gui.gui cimport Init, NewFrame, Render, Terminate
 
 # Python STDLIB
 from ctypes import c_ubyte
