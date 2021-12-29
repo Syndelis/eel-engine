@@ -2,6 +2,9 @@
 Imports
 """
 
+cdef extern from "Python.h":
+    const char *PyUnicode_AsUTF8(object unicode)
+
 # Libc
 from libc.stdio cimport printf
 from libc.stdlib cimport malloc, free, rand, srand
@@ -26,6 +29,8 @@ Data Structures
 """
 from eelText cimport *
 ctypedef _Character Character
+
+from eelImage cimport *
 
 from eelData cimport *
 ctypedef _Point Point
@@ -66,7 +71,11 @@ cpdef getColor():
 Buffer-less BaseFigure implementation
 """
 
-cdef class _BaseFigure:
+cdef class Textured:
+    pass
+
+
+cdef class _BaseFigure(Textured):
 
     cdef Polygon poly
     cdef int texture_set
@@ -75,10 +84,12 @@ cdef class _BaseFigure:
 
         self.poly.color.hex = 0xFFFFFFFF #[255, 255, 255, 255]
         self.poly.mode = GL_LINE_LOOP
-        self.poly.texture = 0
+        self.poly.texture = self.textureID = 0
         self.poly.program = 0
         self.point_size = 1.0
         self.texture_set = 0
+
+        self.image_width = self.image_height = 0
 
     
     cpdef setColor(self, unsigned int r, byte g=0, byte b=0, byte a=255):
@@ -103,15 +114,17 @@ cdef class _BaseFigure:
         self.poly.mode = mode
 
     
-    cpdef setTexture(self, char *img):
+    cpdef setTexture(self, filename: str):
 
-        cdef unsigned int tex = SOIL_load_OGL_texture(
-            img, SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID,
-            SOIL_FLAG_MIPMAPS | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_INVERT_Y |
-            SOIL_FLAG_COMPRESS_TO_DXT | SOIL_FLAG_MULTIPLY_ALPHA
+        cdef unsigned int tex = loadImage(
+            PyUnicode_AsUTF8(filename),
+            &self.image_width, &self.image_height
         )
 
         self.poly.texture = tex
+        self.textureID = tex
+
+        return (self.image_width, self.image_height)
 
 
     cpdef setByteTexture(self, byte texture):

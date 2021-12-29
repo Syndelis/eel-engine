@@ -1,7 +1,7 @@
 # Cython compiler
 
-from distutils.core import setup
-from distutils.extension import Extension
+from setuptools import setup
+from setuptools.extension import Extension
 from Cython.Build import cythonize
 
 from os import name
@@ -44,6 +44,7 @@ FREETYPE        = ('freetype',)
 FREETYPE_PATH   = ('/usr/include/freetype2',)
 
 IMGUI_PATH      = ('lib/imgui', 'lib/imgui/backends')
+STB_PATH        = ('lib/stb',)
 
 BASE_LIB += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
 BASE_INC += ('src/', 'src/common', 'src/eel', 'src/figure', 'src/gui', 'src/shader')
@@ -64,7 +65,7 @@ setup(
         Extension(
             "figure",
             ["src/figure/figure.pyx", "src/figure/eelText.c"],
-            libraries=[*SOIL, *OPENGL, *FREETYPE, 'eelText'],
+            libraries=[*SOIL, *OPENGL, *FREETYPE, 'eelImage', *GLEW],
             library_dirs=[*BASE_LIB, *FREETYPE_PATH],
             include_dirs=[*BASE_INC, *FREETYPE_PATH],
             **EXTRA_ARGS
@@ -87,7 +88,7 @@ setup(
                 "lib/imgui/backends/imgui_impl_glfw.cpp",
                 "lib/imgui/backends/imgui_impl_opengl3.cpp"
             ],
-            libraries=[*OPENGL, *GLFW],
+            libraries=[*OPENGL, *GLFW, 'eelImage', *GLEW],
             library_dirs=[*BASE_LIB],
             include_dirs=[*BASE_INC, *IMGUI_PATH],
             **EXTRA_ARGS

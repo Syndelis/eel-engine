@@ -9,10 +9,12 @@ cdef extern from "Python.h":
 
 from libc.float cimport FLT_MIN, FLT_MAX
 from libcpp cimport bool as cppbool
+from libc.stdint cimport intptr_t
 
 import numpy as np
 cimport imgui
 cimport conf
+from figure cimport Textured
 
 ImVec2_Zeroes = np.zeros((2,))
 ImVec4_Zeroes = np.zeros((4,))
@@ -147,6 +149,18 @@ cpdef ArrowButton(str_id: str, imgui.ImGuiDir dir_):
     return imgui.ArrowButton(PyUnicode_AsUTF8(str_id), dir_)
 
 # TODO: Image, ImageButton
+cpdef Image(Textured spr):
+
+    if spr.image_width == 0:
+        raise Exception("Image :: No Sprite supplied")
+
+    cdef imgui.ImVec2 size_vec2
+
+    size_vec2.x = spr.image_width
+    size_vec2.y = spr.image_height
+
+    imgui.Image(<imgui.ImTextureID><intptr_t> spr.textureID, size_vec2)
+
 
 cpdef Checkbox(label: str, v):
 

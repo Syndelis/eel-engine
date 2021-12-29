@@ -1,3 +1,6 @@
 [submodule "lib/imgui"]
 	path = lib/imgui
 	url = https://github.com/syndelis/imgui
+[submodule "lib/stb"]
+	path = lib/stb
+	url = https://github.com/Syndelis/stb
