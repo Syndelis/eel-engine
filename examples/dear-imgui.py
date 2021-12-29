@@ -1,5 +1,5 @@
 from eelengine import Eel
-from eelengine.figure import Vector
+from eelengine.figure import Sprite, Vector
 import eelengine.gui as imgui
 
 # This example is only purposed to experiment with the WIP Dear Imgui integration
@@ -15,6 +15,14 @@ d = True
 
 global selected
 selected = 0
+
+global spr
+spr = None
+
+@e.load
+def load(eel):
+    global spr
+    spr = Sprite(0, 0, img="../logo-transparent.png")
 
 @e.draw
 def draw(eel):
@@ -52,6 +60,7 @@ def draw(eel):
 
         imgui.EndCombo()
         
+    imgui.Image(spr)
     imgui.End()
 
     imgui.ShowDemoWindow()

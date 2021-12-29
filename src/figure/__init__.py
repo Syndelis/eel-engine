@@ -261,6 +261,8 @@ class Circle(BaseFigure):
 @dataclass
 class Sprite(Rectangle):
 
+    width: int = 0
+    height: int = 0
     img: InitVar[str] = None
 
     def __post_init__(self, fill, img):
@@ -268,7 +270,9 @@ class Sprite(Rectangle):
         if img is None: raise ValueError("The `img` parameter cannot be null")
 
         self.setMode(7)
-        self.setTexture(bytes(img, "utf-8"))
+        w, h = self.setTexture(img)
+        if self.width == 0 and self.height == 0:
+            self.width, self.height = w, h
 
 
     def layout(self):
@@ -276,7 +280,7 @@ class Sprite(Rectangle):
         w = self.width  / 2
         h = self.height / 2
 
-        return [(w, -h), (w, h), (-w, h), (-w, -h)]
+        return [(w, h), (w, -h), (-w, -h), (-w, h)]
 
 
 @dataclass

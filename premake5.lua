@@ -18,8 +18,8 @@ workspace "EelEngine"
 
 eelCLibraries = {
 	eelCallbacks="src/eel/eelCallbacks",
-	eelText="src/figure/eelText",
-	eelShader="src/shader/eelShader"
+	eelShader="src/shader/eelShader",
+	eelImage="src/figure/eelImage"
 }
 
 for lib, libfiles in pairs(eelCLibraries) do
@@ -40,7 +40,7 @@ for lib, libfiles in pairs(eelCLibraries) do
 		pic "On"
 
 		optimize "On"
-		includedirs "/usr/include/freetype2"
+		includedirs { "/usr/include/freetype2", "lib/stb" }
 
 end
 
@@ -51,6 +51,7 @@ project "Engine"
 
 	filter "system:windows"
 		buildcommands {
+			"mkdir -p eelengine",
 			"python setup.py build_ext --inplace --compiler=mingw64 -DMS_WIN64",
 			"cp src/eel/__init__.py eelengine/",
 			"mkdir -p eelengine/figure && mv eelengine/figure*pyd eelengine/figure",
@@ -60,6 +61,7 @@ project "Engine"
 
 	filter "system:linux"
 		buildcommands {
+			"mkdir -p eelengine",
 			"python3 setup.py build_ext --inplace",
 			"cp src/eel/__init__.py eelengine/",
 			"mkdir -p eelengine/figure && mv eelengine/figure*so eelengine/figure",

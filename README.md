@@ -9,19 +9,25 @@ A graphics engine written in C, Python and Cython. With it, you can write games 
 
 #### Compiling
 In order to compile it, you'll need to meet a few requirements:
-- [Python](https://python.org) 3.7+ (on Linux: python3)
-- Your Python's version equivalent development libraries (on Linux: python3-dev)
-- [cython](https://cython.org/) (pip3 install cython)
+- [Python](https://python.org) 3.8+ and your Python version's equivalent development libraries
+- [Cython](https://cython.org/)
+- [NumPy](https://numpy.org/)
 - Any [package](https://www.mesa3d.org/) that includes [OpenGL](https://www.opengl.org/) (Depends on your graphics driver)
-- [GLEW](http://glew.sourceforge.net/) (on Linux: libglew2.1 libglew-dev)
-- [GLFW3](https://www.glfw.org/) >= 3.3-1 (on Linux: libglfw3 libglfw3-dev)
-- [SOIL](http://www.lonesock.net/soil.html) >= 1.07 (on Linux: libsoil1 libsoil-dev)
-- [FreeType2](https://www.freetype.org/) (on Linux: libfreetype6 libfreetype6-dev)
+- [GLEW](http://glew.sourceforge.net/)
+- [GLFW3](https://www.glfw.org/) >= 3.3-1
+- [FreeType2](https://www.freetype.org/)
+
+Check out how to install them [at the dependencies section](###Dependencies), at the bottom of the page.
 
 After meeting the requirements, be sure to install [Premake5](https://premake.github.io/) and then run the following commands:
 ```sh
 premake5 gmake2
 make
+```
+
+Optionally, you may install it with
+```sh
+./install.sh
 ```
 
 Windows (64bit) users will have to follow the instructions listed in [here](Windows-compile/Windows.md).
@@ -53,9 +59,32 @@ That function will be executed every time the `draw()` method of our window is c
 You should now see the white outline of a rectangle in a 640x360 window. That's a pretty basic example, but you can check out more on the [/examples/](examples) directory. I recommend checking out [snake.py](examples/snake/snake.py) if you want to learn some basic stuff quickly.
 
 ---
+### Dependencies
+
+- Installing for Ubuntu derivatives:
+    ```sh
+    apt install python3 python3-dev python3-pip libglew2.1 libglew-dev libglfw3 libglfw3-dev libfreetype6 libfreetype6-dev
+
+    git submodule update --init --recursive
+
+    pip3 install cython numpy
+    ```
+
+- Installing for Arch Linux
+    ```sh
+    pacman -S python python-pip glew glfw-$XDG_SESSION_TYPE freetype2
+
+    git submodule update --init --recursive
+
+    pip3 install cython numpy
+    ```
+
+    PS: Repositories required for packages listed above: `community` and `extra`
+
+---
 
 #### Documentation
-Check out [the official documentation](documentation.md)
+Check out [the official documentation](documentation.md) (Constantly outdated, sorry! Try looking at the examples more often)
 
 ---
 
