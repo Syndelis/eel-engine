@@ -174,8 +174,8 @@ cpdef Bullet():
 
 cpdef BeginCombo(label: str, preview_value: str, imgui.ImGuiComboFlags flags=0):
 
-    imgui.BeginCombo(PyUnicode_AsUTF8(label), PyUnicode_AsUTF8(preview_value), flags)
-    return str(preview_value)
+    return imgui.BeginCombo(PyUnicode_AsUTF8(label), PyUnicode_AsUTF8(preview_value), flags)
+    # return str(preview_value)
 
 
 cpdef EndCombo():

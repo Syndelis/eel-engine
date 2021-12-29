@@ -42,16 +42,17 @@ def draw(eel):
 
     imgui.End()
 
-    with imgui.Window("Big test"):
-        imgui.ProgressBar(.75)
+    imgui.Begin("Progress")
+    imgui.ProgressBar(.75)
 
-        imgui.BeginCombo("##combo", f"Sel: {selected}")
-
+    if imgui.BeginCombo("##combo", f"Option {selected}"):
         for i in range(5):
             if imgui.Selectable(f"Option {i}", selected==i):
                 selected = i
 
         imgui.EndCombo()
+        
+    imgui.End()
 
     imgui.ShowDemoWindow()
 

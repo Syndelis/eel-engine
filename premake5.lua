@@ -54,9 +54,7 @@ project "Engine"
 			"python setup.py build_ext --inplace --compiler=mingw64 -DMS_WIN64",
 			"cp src/eel/__init__.py eelengine/",
 			"mkdir -p eelengine/figure && mv eelengine/figure*pyd eelengine/figure",
-			"cp src/figure/__init__.py eelengine/figure/",
-			"mkdir -p eelengine/gui && mv eelengine/gui*pyd eelengine/gui",
-			"cp src/gui/__init__.py eelengine/gui/"
+			"cp src/figure/__init__.py eelengine/figure/"
 		}
 		cleanextensions ".pyd"
 
@@ -65,9 +63,7 @@ project "Engine"
 			"python3 setup.py build_ext --inplace",
 			"cp src/eel/__init__.py eelengine/",
 			"mkdir -p eelengine/figure && mv eelengine/figure*so eelengine/figure",
-			"cp src/figure/__init__.py eelengine/figure/",
-			"mkdir -p eelengine/gui && mv eelengine/gui*so eelengine/gui",
-			"cp src/gui/__init__.py eelengine/gui/"
+			"cp src/figure/__init__.py eelengine/figure/"
 		}
 		cleancommands {
 			"rm -rf build obj eelengine",
