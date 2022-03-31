@@ -18,11 +18,10 @@ ELSE:
     from posix.time cimport CLOCK_MONOTONIC_RAW
 
 
-# Graphics (GL + GLFW & SOIL)
+# Graphics (GL + GLFW)
 from glew cimport glewInit, glBindFramebuffer, glFramebufferTexture, glDrawBuffers, glCheckFramebufferStatus, glGenFramebuffers, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_COMPLETE
 from glfw3 cimport *
 from gl cimport *
-from SOIL cimport *
 from gui cimport Init, NewFrame, Render, Terminate
 
 # Python STDLIB

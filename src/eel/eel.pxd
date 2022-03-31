@@ -11,11 +11,10 @@ from libc.math cimport pi, cos, sin
 # Posix
 from posix.time cimport timespec
 
-# Graphics (GL + GLFW & SOIL)
+# Graphics (GL + GLFW)
 from glew cimport glewInit, glBindFramebuffer, glFramebufferTexture, glDrawBuffers, glCheckFramebufferStatus, glGenFramebuffers, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_COMPLETE
 from glfw3 cimport *
 from gl cimport *
-from SOIL cimport *
 
 # Python STDlib
 from enum import Enum

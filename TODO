@@ -17,7 +17,6 @@ Text from stream (function(args) -> str)
 Better sprite Support
     The current one is really bad
     Animated sprites, etc.
-    Migrate from SOIL to SpartanJ/SOIL2
 
 Misc
     Eel.setFPS -> Locks FPS
