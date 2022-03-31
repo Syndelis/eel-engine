@@ -12,11 +12,10 @@ from libc.time cimport time
 from libc.math cimport pi, cos, sin, pow, sqrt
 from libc.string cimport strlen, strcpy
 
-# Graphics (GL & SOIL)
+# Graphics (GL)
 from glew cimport glewInit
 from gl cimport *
 from glfw3 cimport *
-from SOIL cimport *
 
 # Eel integration
 from eel cimport Paintable

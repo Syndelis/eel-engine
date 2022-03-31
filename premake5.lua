@@ -32,7 +32,7 @@ for lib, libfiles in pairs(eelCLibraries) do
 			links { "glfw3", "m", "freetype", "opengl32", "GLEW32" }
 
 		filter "system:linux"
-			links { "glfw", "m", "freetype", "GL", "GLEW", "SOIL" }
+			links { "glfw", "m", "freetype", "GL", "GLEW" }
 
 		filter {}
 

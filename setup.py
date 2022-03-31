@@ -39,7 +39,6 @@ else:
 
 
 
-SOIL            = ('SOIL',)
 FREETYPE        = ('freetype',)
 FREETYPE_PATH   = ('/usr/include/freetype2',)
 
@@ -57,7 +56,7 @@ setup(
         Extension(
             "eel",
             ["src/eel/eel.pyx", "src/shader/eelShader.c"],
-            libraries=[*SOIL, *BASE, *OPENGL, *GLFW, *GLEW, 'eelCallbacks', 'eelShader'],
+            libraries=[*BASE, *OPENGL, *GLFW, *GLEW, 'eelCallbacks', 'eelShader'],
             library_dirs=[*BASE_LIB],
             include_dirs=[*BASE_INC],
             **EXTRA_ARGS
@@ -65,7 +64,7 @@ setup(
         Extension(
             "figure",
             ["src/figure/figure.pyx", "src/figure/eelText.c"],
-            libraries=[*SOIL, *OPENGL, *FREETYPE, 'eelImage', *GLEW],
+            libraries=[*OPENGL, *FREETYPE, 'eelImage', *GLEW],
             library_dirs=[*BASE_LIB, *FREETYPE_PATH],
             include_dirs=[*BASE_INC, *FREETYPE_PATH],
             **EXTRA_ARGS
