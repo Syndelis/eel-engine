@@ -2,8 +2,6 @@
 /.vscode/
 /build/
 /__pycache__/
-/TEST/
-/ctest/
 
 # Ignore possibly built binaries/C source
 *.so
@@ -13,8 +11,6 @@ eel.c
 figure.c
 shader.c
 gui.c*
-*.txt
-*.png
 *.oyd
 *.lib
 *.ini
@@ -24,3 +20,7 @@ gui.c*
 /eelengine/
 *.make
 Makefile
+
+# Ignore random files
+*.txt
+*.png
